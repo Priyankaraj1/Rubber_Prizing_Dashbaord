@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import axios from "axios";
 
-// 🟢 Custom Triangle Bar Shape (for Intercrops)
+
 const TriangleBar = (props) => {
   const { fill, x, y, width, height } = props;
   return (
@@ -37,7 +37,7 @@ const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
 
 
 
-  // 🟩 Fetch All Data
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,14 +54,14 @@ const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
     fetchData();
   }, []);
 
-  // 🟦 Fetch Rubber Price Data
+  
  useEffect(() => {
   const fetchPriceData = async () => {
     try {
       const url = new URL("https://agribot-backend.demetrix.in/fetch_rubber_prices");
       url.searchParams.append("from_date", fromDate);
       url.searchParams.append("to_date", toDate);
-      url.searchParams.append("grade", selectedGrade); // 🔥 Add grade filter
+      url.searchParams.append("grade", selectedGrade); 
 
       if (selectedMarket !== "all") {
         url.searchParams.append("market", selectedMarket);
@@ -79,7 +79,7 @@ const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
   };
 
   fetchPriceData();
-}, [fromDate, toDate, selectedMarket, selectedGrade]); // ✅ include selectedGrade dependency
+}, [fromDate, toDate, selectedMarket, selectedGrade]); 
 
 
   if (!breadcrumbData || !immobileData) {
@@ -134,7 +134,7 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
     female: "#9acd32",
   };
 
-  // 🟡 Build Market Price Data (INR Only)
+  
   const marketData = {};
   priceData
     .filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m.market)) // hide these markets
@@ -166,7 +166,7 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
 
   return (
     <div style={{ padding: "0 40px", background: "#fff" }}>
-      {/* 🟢 Rubber Price Chart (INR Only Bars) */}
+     
       <div style={{ marginBottom: "40px" }}>
         <h3 style={{ color: "#004225", fontSize: "20px" }}>
           Rubber Price Comparison by Market (INR ₹)
@@ -206,7 +206,7 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
         </ResponsiveContainer>
       </div>
 
-      {/* 🟣 Three Small Charts Below */}
+     
       <div
         style={{
           display: "grid",
