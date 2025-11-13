@@ -1,8 +1,8 @@
-/* src/components/Graphs/graphs.css */
 .graphs-wrapper {
   width: 100%;
   margin-top: 40px;
   padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .graph-row {
@@ -17,12 +17,18 @@
   background: #ffffff;
   border-radius: 18px;
   padding: 20px;
-  flex: 1;
-  min-width: 300px;
+  flex: 1 1 300px;             /* Flexible width */
+  min-width: 280px;
   max-width: 600px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.graph-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
 }
 
 .graph-title {
@@ -33,23 +39,72 @@
   text-align: left;
 }
 
-/* Responsive */
+/* Make chart responsive */
+.graph-card .recharts-wrapper {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ────────────── RESPONSIVE ────────────── */
+
+/* Medium tablets */
 @media (max-width: 900px) {
   .graph-row {
     flex-direction: column;
     align-items: center;
   }
+
   .graph-card {
-    min-width: 100%;
-    max-width: 100%;
+    flex: 1 1 90%;
+    min-width: 90%;
+    max-width: 90%;
+    padding: 18px;
+  }
+
+  .graph-title {
+    font-size: 17px;
+    text-align: center;
+  }
+
+  .graph-card .recharts-wrapper {
+    width: 100% !important;
+    height: auto !important;
   }
 }
 
+/* Mobile devices */
 @media (max-width: 600px) {
+  .graph-card {
+    flex: 1 1 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 14px;
+  }
+
   .graph-title {
     font-size: 16px;
+    margin-bottom: 12px;
   }
+
+  .graph-card .recharts-wrapper {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
   .graph-card {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .graph-title {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .graph-card .recharts-wrapper {
+    width: 100% !important;
+    height: auto !important;
   }
 }

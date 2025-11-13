@@ -35,11 +35,12 @@ const PRICE_API = "https://agribot-backend.demetrix.in/fetch_rubber_prices";
 const API_BASE = "https://rubber-backend.solidaridadasia.com/api";
 
 const MARKETS = [
-  { id: "all", name: "All Markets" },
-  { id: "agartala", name: "Agartala" },
-  { id: "kochi", name: "Kochi" },
-  { id: "kottayam", name: "Kottayam" },
-];
+   { id: "all", name: "All Markets" },
+    { id: "agartala", name: "Agartala" },
+     { id: "kochi", name: "Kochi" },
+      { id: "kottayam", name: "Kottayam" }, 
+    ];
+
 
 export default function Dashboard() {
   const theme = useTheme();
@@ -57,8 +58,13 @@ export default function Dashboard() {
   const [priceDateUsed, setPriceDateUsed] = useState("");
   // Filters
 const [showFilters, setShowFilters] = useState(false);
-const [fromDate, setFromDate] = useState(dayjs().startOf("month"));
+// const [fromDate, setFromDate] = useState(dayjs().startOf("month"));
+// const [toDate, setToDate] = useState(dayjs());
+
+
+const [fromDate, setFromDate] = useState(dayjs().subtract(2, "month"));
 const [toDate, setToDate] = useState(dayjs());
+
 
 
   // Stats Modal
@@ -274,9 +280,6 @@ const [toDate, setToDate] = useState(dayjs());
     </Select>
   </FormControl>
 </Grid>
-
-
-      {/* Apply Button */}
       <Grid item xs={12} sm={6} md={3}>
         <Button
           variant="contained"
@@ -456,7 +459,7 @@ const [toDate, setToDate] = useState(dayjs());
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenStats(false)}>Cancel</Button>
-            <Button onClick={handleUpdateStats} variant="contained" color="primary">
+            <Button onClick={handleUpdateStats} variant="contained" bgcolor="#4caf50">
               Update
             </Button>
           </DialogActions>
