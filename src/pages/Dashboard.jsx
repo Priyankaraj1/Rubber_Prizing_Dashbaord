@@ -53,6 +53,11 @@ export default function Dashboard() {
   const [prices, setPrices] = useState([]);
   const [loadingPrices, setLoadingPrices] = useState(true);
   const [priceDateUsed, setPriceDateUsed] = useState("");
+  // Filters
+const [showFilters, setShowFilters] = useState(false);
+const [fromDate, setFromDate] = useState(dayjs().startOf("month"));
+const [toDate, setToDate] = useState(dayjs());
+
 
   // Stats Modal
   const [openStats, setOpenStats] = useState(false);
@@ -178,12 +183,14 @@ export default function Dashboard() {
           >
             UPDATE STATS
           </Button>
-          <Button
-            variant="contained"
-            sx={{ bgcolor: "#1976d2", "&:hover": { bgcolor: "#1565c0" } }}
-          >
-            SHOW FILTERS
-          </Button>
+         <Button
+  variant="contained"
+  sx={{ bgcolor: "#4caf50", "&:hover": { bgcolor: "#388e3c" } }}
+  onClick={() => setShowFilters((prev) => !prev)}
+>
+  {showFilters ? "HIDE FILTERS" : "SHOW FILTERS"}
+</Button>
+
         </Box>
 
         {/* Price Header */}
@@ -198,32 +205,81 @@ export default function Dashboard() {
           </Typography>
 
           {/* Filters */}
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6} md={4}>
-              <DatePicker
-                label="Select Date"
-                value={selectedDate}
-                onChange={(newValue) => setSelectedDate(newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Market</InputLabel>
-                <Select
-                  value={selectedMarket}
-                  label="Market"
-                  onChange={(e) => setSelectedMarket(e.target.value)}
-                >
-                  {MARKETS.map((market) => (
-                    <MenuItem key={market.id} value={market.id}>
-                      {market.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+       {/* Filters */}
+{/* FILTERS SECTION (Collapsible) */}
+{showFilters && (
+  <Paper
+    elevation={2}
+    sx={{
+      p: 2,
+      mt: 2,
+      mb: 3,
+      borderRadius: 2,
+      backgroundColor: "#f9f9f9",
+    }}
+  >
+    <Grid container spacing={2}>
+      {/* From Date */}
+      <Grid item xs={12} sm={6} md={3}>
+        <DatePicker
+          label="From Date"
+          value={fromDate}
+          onChange={(newValue) => setFromDate(newValue)}
+          renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+        />
+      </Grid>
+
+      {/* To Date */}
+      <Grid item xs={12} sm={6} md={3}>
+        <DatePicker
+          label="To Date"
+          value={toDate}
+          onChange={(newValue) => setToDate(newValue)}
+          renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+        />
+      </Grid>
+
+      {/* Market Dropdown */}
+      <Grid item xs={12} sm={6} md={3}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Market</InputLabel>
+          <Select
+            value={selectedMarket}
+            label="Market"
+            onChange={(e) => setSelectedMarket(e.target.value)}
+          >
+            {MARKETS.map((market) => (
+              <MenuItem key={market.id} value={market.id}>
+                {market.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+
+      {/* Apply Button */}
+      <Grid item xs={12} sm={6} md={3}>
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{ height: "100%", bgcolor: "#4caf50", "&:hover": { bgcolor: "#388e3c" } }}
+          onClick={() => {
+            console.log("Filter applied:", {
+              from: fromDate.format("YYYY-MM-DD"),
+              to: toDate.format("YYYY-MM-DD"),
+              market: selectedMarket,
+            });
+            // 🔜 You can call your price API here using from/to when integrated
+          }}
+        >
+          APPLY FILTER
+        </Button>
+      </Grid>
+    </Grid>
+  </Paper>
+)}
+
+
         </Box>
 
         {/* Loading State */}

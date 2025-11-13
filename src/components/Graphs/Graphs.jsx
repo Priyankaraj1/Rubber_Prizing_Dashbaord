@@ -11,17 +11,19 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  LineChart,
+  Line,
 } from "recharts";
 import axios from "axios";
 
-// Custom triangular bar shape for Intercrops Distribution
+// Custom Triangle Bar Shape
 const TriangleBar = (props) => {
   const { fill, x, y, width, height } = props;
   return (
     <path
-      d={`M${x},${y + height} L${x + width / 2},${y} L${x + width},${y + height} Z`}
+      d={`M${x},${y + height} 
+          L${x + width / 2},${y} 
+          L${x + width},${y + height} Z`}
       stroke="none"
       fill={fill}
     />
@@ -31,7 +33,11 @@ const TriangleBar = (props) => {
 const Graphs = () => {
   const [breadcrumbData, setBreadcrumbData] = useState(null);
   const [immobileData, setImmobileData] = useState(null);
+  const [priceData, setPriceData] = useState([]);
+  const [fromDate, setFromDate] = useState("2025-09-01");
+  const [toDate, setToDate] = useState("2025-11-12");
 
+  // 🟩 Fetch All Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,11 +49,28 @@ const Graphs = () => {
         setBreadcrumbData(breadcrumbRes.data.data);
         setImmobileData(immobileRes.data.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching breadcrumb data:", error);
       }
     };
     fetchData();
   }, []);
+
+  // 🟦 Fetch Rubber Price Data
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        const res = await axios.get(
+          `https://agribot-backend.demetrix.in/fetch_rubber_prices?from_date=${fromDate}&to_date=${toDate}`
+        );
+        if (res.data?.data) {
+          setPriceData(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching price data:", error);
+      }
+    };
+    fetchPriceData();
+  }, [fromDate, toDate]);
 
   if (!breadcrumbData || !immobileData) {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading graphs...</p>;
@@ -59,33 +82,37 @@ const Graphs = () => {
     { name: "Female", value: breadcrumbData.total_female_workers },
   ];
 
-  const agriAreaData = [
-    { name: "Immature Area", value: breadcrumbData.total_immature_area },
-    { name: "Mature Area", value: breadcrumbData.total_mature_area },
-    { name: "Total Agri Area", value: breadcrumbData.total_agri_area },
-  ];
-
-  const treeAgeData = Object.keys(breadcrumbData.mature_tree_distribution).map((key) => ({
-    range: key,
-    Mature: breadcrumbData.mature_tree_distribution[key],
-    Immature: breadcrumbData.immature_tree_distribution[key],
-  }));
-
-  const intercropData = breadcrumbData.plotwise_unique_intercrops.map((crop) => ({
-    name: crop.inter_crops,
-    value: crop.count,
-  }));
-
   const leadData = [
     { name: "Lead Farmers", value: parseInt(immobileData.no_of_lead_farmers) },
     { name: "Producer Societies", value: parseInt(immobileData.producer_society) },
   ];
 
-  const marketData = [
-    { name: "Agartala", RSS4: 17800, RSS5: 17300 },
-    { name: "Kochi", RSS4: 18600, RSS5: 18200 },
-    { name: "Kottayam", RSS4: 18600, RSS5: 18200 },
-  ];
+  // === Intercrop Data ===
+  const intercropData =
+    breadcrumbData.plotwise_unique_intercrops?.map((crop) => ({
+      name: crop.inter_crops,
+      value: crop.count,
+    })) || [];
+
+  const INTERCROP_ORDER = ["No", "Pineapple", "Coffee", "Cocoa", "Banana", "Tubers", "others"];
+  const INTERCROP_COLORS = {
+    No: "#2b8a66",
+    Pineapple: "#9ad14a",
+    Coffee: "#cddc39",
+    Cocoa: "#26a59a",
+    Banana: "#29b6f6",
+    Tubers: "#8bc34a",
+    others: "#9ad14a",
+  };
+
+  const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
+    const found = intercropData.find((d) => d.name === cropName);
+    return found || { name: cropName, value: 0 };
+  }).filter((d) => d.value > 0);
+
+  const intercropBarColors = sortedIntercropData.map(
+    (d) => INTERCROP_COLORS[d.name] || "#ccc"
+  );
 
   const COLORS = {
     rss4: "#2e8b57",
@@ -94,9 +121,6 @@ const Graphs = () => {
     lead2: "#9acd32",
     male: "#2e8b57",
     female: "#9acd32",
-    immature: "#9acd32",
-    mature: "#2e8b57",
-    total: "#7cb342",
   };
 
   return (
@@ -110,13 +134,16 @@ const Graphs = () => {
           marginBottom: "40px",
         }}
       >
-        {/* Market-wise Price Comparison */}
+        {/* 🟢 Line Chart for Rubber Prices */}
         <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>Market-wise Price Comparison</h3>
+          <h3 style={{ color: "#004225", fontSize: "20px" }}>
+            Rubber Price Trend (INR & USD)
+          </h3>
+
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={marketData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-              <CartesianGrid stroke="#e0e0e0" />
-              <XAxis dataKey="name" tick={{ fontSize: 13 }} />
+            <LineChart data={priceData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="arrival_date" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
@@ -126,16 +153,32 @@ const Graphs = () => {
                 }}
                 labelStyle={{ fontWeight: "bold" }}
               />
-              <Legend iconType="rect" />
-              <Bar dataKey="RSS4" fill={COLORS.rss4} barSize={40} />
-              <Bar dataKey="RSS5" fill={COLORS.rss5} barSize={40} />
-            </BarChart>
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="INR"
+                stroke="#2e8b57"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+                name="INR (₹)"
+              />
+              <Line
+                type="monotone"
+                dataKey="USD"
+                stroke="#29b6f6"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+                name="USD ($)"
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Lead Farmers vs Producer Societies */}
         <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>Lead Farmers vs Producer Societies</h3>
+          <h3 style={{ color: "#004225", fontSize: "20px" }}>
+            Lead Farmers vs Producer Societies
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={leadData}
@@ -176,83 +219,38 @@ const Graphs = () => {
         }}
       >
         {/* Intercrops Distribution */}
-       {/* Intercrops Distribution */}
-<div>
-  <h3 style={{ color: "#004225", fontSize: "20px" }}>Intercrops Distribution</h3>
-  <ResponsiveContainer width="100%" height={300}>
-    <BarChart
-      data={intercropData}
-      margin={{ top: 10, right: 10, left: 0, bottom: 60 }}
-    >
-      <CartesianGrid stroke="#e0e0e0" />
-      {/* Hide X-axis completely */}
-      <XAxis dataKey="name" tick={false} axisLine={false} />
-      <YAxis tick={{ fontSize: 12 }} />
-      <Tooltip
-        contentStyle={{
-          background: "#fff",
-          borderRadius: 6,
-          border: "1px solid #ccc",
-        }}
-      />
-
-      {/* ✅ Custom Legend that matches the X-axis values */}
-      <Legend
-        verticalAlign="bottom"
-        align="center"
-        iconType="circle"
-        wrapperStyle={{
-          paddingTop: "10px",
-          fontSize: "13px",
-        }}
-        payload={intercropData.map((entry, index) => {
-          const COLORS = [
-            "#2b8a66", // No
-            "#9ad14a", // Pineapple
-            "#26a59a", // Coffee
-            "#29b6f6", // Cocoa
-            "#004d40", // Banana
-            "#8bc34a", // Tubers
-            "#cddc39", // others
-          ];
-          return {
-            id: entry.name,
-            type: "circle",
-            value: entry.name, // 👈 uses your X-axis label instead of "value"
-            color: COLORS[index % COLORS.length],
-          };
-        })}
-      />
-
-      {/* ✅ Triangular bars using same colors */}
-      <Bar dataKey="value" shape={<TriangleBar />} barSize={25}>
-        {intercropData.map((entry, index) => {
-          const COLORS = [
-            "#2b8a66",
-            "#9ad14a",
-            "#26a59a",
-            "#29b6f6",
-            "#004d40",
-            "#8bc34a",
-            "#cddc39",
-          ];
-          return (
-            <Cell
-              key={`cell-${index}`}
-              fill={COLORS[index % COLORS.length]}
-              name={entry.name}
-            />
-          );
-        })}
-      </Bar>
-    </BarChart>
-  </ResponsiveContainer>
-</div>
-
+        <div>
+          <h3 style={{ color: "#004225", fontSize: "20px", marginBottom: "10px" }}>
+            Intercrops Distribution
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={sortedIntercropData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend iconType="circle" />
+              <Bar dataKey="value" shape={<TriangleBar />} name="Intercrops">
+                {sortedIntercropData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={intercropBarColors[index % intercropBarColors.length]}
+                    name={entry.name}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* Gender Distribution */}
         <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>Gender Distribution</h3>
+          <h3 style={{ color: "#004225", fontSize: "20px" }}>
+            Gender Distribution
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
