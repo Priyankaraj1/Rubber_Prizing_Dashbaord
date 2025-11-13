@@ -46,8 +46,10 @@ export default function Dashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Filters
+  const [selectedGrade, setSelectedGrade] = useState("RSS4");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [selectedMarket, setSelectedMarket] = useState("all");
+
 
   // Prices
   const [prices, setPrices] = useState([]);
@@ -256,6 +258,23 @@ const [toDate, setToDate] = useState(dayjs());
           </Select>
         </FormControl>
       </Grid>
+      {/* Grade Dropdown */}
+<Grid item xs={12} sm={6} md={3}>
+  <FormControl fullWidth size="small">
+    <InputLabel>Grade</InputLabel>
+    <Select
+      value={selectedGrade}
+      label="Grade"
+      onChange={(e) => setSelectedGrade(e.target.value)}
+    >
+      <MenuItem value="RSS4">RSS4</MenuItem>
+      <MenuItem value="RSS5">RSS5</MenuItem>
+      <MenuItem value="Latex60%">Latex60%</MenuItem>
+      <MenuItem value="ISNR20">ISNR20</MenuItem>
+    </Select>
+  </FormControl>
+</Grid>
+
 
       {/* Apply Button */}
       <Grid item xs={12} sm={6} md={3}>
@@ -383,7 +402,13 @@ const [toDate, setToDate] = useState(dayjs());
         {/* Graphs Section */}
         <Box sx={{ mt: 6 }}>
          
-          <Graphs />
+         <Graphs
+  fromDate={fromDate.format("YYYY-MM-DD")}
+  toDate={toDate.format("YYYY-MM-DD")}
+  selectedMarket={selectedMarket}
+  selectedGrade={selectedGrade}
+/>
+
         </Box>
 
         {/* Stats Update Dialog */}

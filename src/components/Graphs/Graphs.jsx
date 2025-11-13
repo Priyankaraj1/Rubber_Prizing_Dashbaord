@@ -11,12 +11,11 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  LineChart,
-  Line,
+  ComposedChart,
 } from "recharts";
 import axios from "axios";
 
-// Custom Triangle Bar Shape
+// 🟢 Custom Triangle Bar Shape (for Intercrops)
 const TriangleBar = (props) => {
   const { fill, x, y, width, height } = props;
   return (
@@ -30,12 +29,13 @@ const TriangleBar = (props) => {
   );
 };
 
-const Graphs = () => {
+const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
+
   const [breadcrumbData, setBreadcrumbData] = useState(null);
   const [immobileData, setImmobileData] = useState(null);
   const [priceData, setPriceData] = useState([]);
-  const [fromDate, setFromDate] = useState("2025-09-01");
-  const [toDate, setToDate] = useState("2025-11-12");
+
+
 
   // 🟩 Fetch All Data
   useEffect(() => {
@@ -45,7 +45,6 @@ const Graphs = () => {
           axios.get("https://rubber-backend.solidaridadasia.com/api/bredcrumb"),
           axios.get("https://rubber-backend.solidaridadasia.com/api/getImmobileData"),
         ]);
-
         setBreadcrumbData(breadcrumbRes.data.data);
         setImmobileData(immobileRes.data.data);
       } catch (error) {
@@ -56,21 +55,32 @@ const Graphs = () => {
   }, []);
 
   // 🟦 Fetch Rubber Price Data
-  useEffect(() => {
-    const fetchPriceData = async () => {
-      try {
-        const res = await axios.get(
-          `https://agribot-backend.demetrix.in/fetch_rubber_prices?from_date=${fromDate}&to_date=${toDate}`
-        );
-        if (res.data?.data) {
-          setPriceData(res.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching price data:", error);
+ useEffect(() => {
+  const fetchPriceData = async () => {
+    try {
+      const url = new URL("https://agribot-backend.demetrix.in/fetch_rubber_prices");
+      url.searchParams.append("from_date", fromDate);
+      url.searchParams.append("to_date", toDate);
+      url.searchParams.append("grade", selectedGrade); // 🔥 Add grade filter
+
+      if (selectedMarket !== "all") {
+        url.searchParams.append("market", selectedMarket);
       }
-    };
-    fetchPriceData();
-  }, [fromDate, toDate]);
+
+      const res = await axios.get(url.toString());
+      if (res.data?.data) {
+        setPriceData(res.data.data);
+      } else {
+        setPriceData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching filtered price data:", error);
+    }
+  };
+
+  fetchPriceData();
+}, [fromDate, toDate, selectedMarket, selectedGrade]); // ✅ include selectedGrade dependency
+
 
   if (!breadcrumbData || !immobileData) {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading graphs...</p>;
@@ -105,10 +115,11 @@ const Graphs = () => {
     others: "#9ad14a",
   };
 
-  const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
-    const found = intercropData.find((d) => d.name === cropName);
-    return found || { name: cropName, value: 0 };
-  }).filter((d) => d.value > 0);
+const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
+  const found = intercropData.find((d) => d.name === cropName);
+  return found || { name: cropName, value: 0 };
+});
+
 
   const intercropBarColors = sortedIntercropData.map(
     (d) => INTERCROP_COLORS[d.name] || "#ccc"
@@ -123,59 +134,88 @@ const Graphs = () => {
     female: "#9acd32",
   };
 
+  // 🟡 Build Market Price Data (INR Only)
+  const marketData = {};
+  priceData
+    .filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m.market)) // hide these markets
+    .forEach((marketItem) => {
+      const marketName = marketItem.market;
+      marketItem.prices.forEach((price) => {
+        const date = price.arrival_date;
+        if (!marketData[date]) marketData[date] = { date };
+        marketData[date][`${marketName}_INR`] = parseFloat(price.INR);
+      });
+    });
+
+  const priceChartData = Object.values(marketData).sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+
+  const visibleMarkets = Array.from(
+    new Set(priceData.map((m) => m.market).filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m)))
+  );
+
+  const marketColors = [
+    "#2e8b57",
+    "#cddc39",
+    "#26a69a",
+    "#8e24aa",
+    "#cddc39",
+    "#26a69a",
+  ];
+
   return (
     <div style={{ padding: "0 40px", background: "#fff" }}>
-      {/* Row 1 */}
+      {/* 🟢 Rubber Price Chart (INR Only Bars) */}
+      <div style={{ marginBottom: "40px" }}>
+        <h3 style={{ color: "#004225", fontSize: "20px" }}>
+          Rubber Price Comparison by Market (INR ₹)
+        </h3>
+
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={priceChartData}
+            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+            <YAxis tick={{ fontSize: 12 }} />
+            <Tooltip
+              formatter={(value) => `₹${value}`}
+              contentStyle={{
+                background: "#fff",
+                borderRadius: 6,
+                border: "1px solid #ccc",
+              }}
+              labelStyle={{ fontWeight: "bold" }}
+            />
+            <Legend />
+
+            {/* INR - Bars Only */}
+            {visibleMarkets.map((market, idx) => (
+              <Bar
+                key={`${market}_bar`}
+                dataKey={`${market}_INR`}
+                name={`${market} (INR ₹)`}
+                fill={marketColors[idx % marketColors.length]}
+                barSize={20}
+                radius={[6, 6, 0, 0]}
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 🟣 Three Small Charts Below */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "40px",
-          marginBottom: "40px",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "10px",
         }}
       >
-        {/* 🟢 Line Chart for Rubber Prices */}
-        <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>
-            Rubber Price Trend (INR & USD)
-          </h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={priceData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="arrival_date" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{
-                  background: "#fff",
-                  borderRadius: 6,
-                  border: "1px solid #ccc",
-                }}
-                labelStyle={{ fontWeight: "bold" }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="INR"
-                stroke="#2e8b57"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-                name="INR (₹)"
-              />
-              <Line
-                type="monotone"
-                dataKey="USD"
-                stroke="#29b6f6"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-                name="USD ($)"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
         {/* Lead Farmers vs Producer Societies */}
-        <div>
+        {/* <div>
           <h3 style={{ color: "#004225", fontSize: "20px" }}>
             Lead Farmers vs Producer Societies
           </h3>
@@ -188,7 +228,12 @@ const Graphs = () => {
             >
               <CartesianGrid stroke="#e0e0e0" />
               <XAxis type="number" tick={{ fontSize: 12 }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 13 }} width={150} />
+              <YAxis
+                dataKey="name"
+                type="category"
+                tick={{ fontSize: 13 }}
+                width={150}
+              />
               <Tooltip
                 contentStyle={{
                   background: "#fff",
@@ -206,33 +251,71 @@ const Graphs = () => {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Row 2 */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "40px",
-          marginBottom: "40px",
-        }}
-      >
+        </div> */}
         {/* Intercrops Distribution */}
         <div>
           <h3 style={{ color: "#004225", fontSize: "20px", marginBottom: "10px" }}>
             Intercrops Distribution
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="500" height={400}>
             <BarChart
               data={sortedIntercropData}
               margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip />
-              <Legend iconType="circle" />
+             <Tooltip
+  formatter={(value, name, props) => {
+   
+    return [`${value}`, props.payload.name];
+  }}
+  labelStyle={{ fontWeight: "bold" }}
+  contentStyle={{
+    background: "#fff",
+    borderRadius: 6,
+    border: "1px solid #ccc",
+  }}
+/>
+
+             <Legend
+  verticalAlign="bottom"
+  align="center"
+  wrapperStyle={{ marginTop: 20 }} 
+  content={() => (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "14px", 
+        marginTop: "10px", 
+      }}
+    >
+      {sortedIntercropData.map((entry, i) => (
+        <div
+          key={i}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <div
+            style={{
+              width: 14,
+              height: 14,
+              background: intercropBarColors[i],
+              borderRadius: "50%", 
+              border: "1px solid #ccc",
+              boxShadow: "0 0 2px rgba(0,0,0,0.2)",
+            }}
+          />
+          <span style={{ fontSize: 13, color: "#333" }}>{entry.name}</span>
+        </div>
+      ))}
+    </div>
+  )}
+/>
               <Bar dataKey="value" shape={<TriangleBar />} name="Intercrops">
                 {sortedIntercropData.map((entry, index) => (
                   <Cell
@@ -245,8 +328,6 @@ const Graphs = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Gender Distribution */}
         <div>
           <h3 style={{ color: "#004225", fontSize: "20px" }}>
             Gender Distribution
@@ -281,5 +362,4 @@ const Graphs = () => {
     </div>
   );
 };
-
 export default Graphs;
