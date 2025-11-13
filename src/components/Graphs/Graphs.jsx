@@ -11,10 +11,9 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  ComposedChart,
 } from "recharts";
 import axios from "axios";
-
+import { useTheme } from "@mui/material/styles";
 
 const TriangleBar = (props) => {
   const { fill, x, y, width, height } = props;
@@ -29,15 +28,19 @@ const TriangleBar = (props) => {
   );
 };
 
-const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
+const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
+  const axisColor = isDark ? "#E0E0E0" : "#333";
+  const textColor = isDark ? "#FFFFFF" : "#000000";
+  const gridColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const cardBg = isDark ? "#1E1E1E" : "#FFFFFF";
 
   const [breadcrumbData, setBreadcrumbData] = useState(null);
   const [immobileData, setImmobileData] = useState(null);
   const [priceData, setPriceData] = useState([]);
 
-
-
- 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,50 +57,40 @@ const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
     fetchData();
   }, []);
 
-  
- useEffect(() => {
-  const fetchPriceData = async () => {
-    try {
-      const url = new URL("https://agribot-backend.demetrix.in/fetch_rubber_prices");
-      url.searchParams.append("from_date", fromDate);
-      url.searchParams.append("to_date", toDate);
-      url.searchParams.append("grade", selectedGrade); 
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        const url = new URL("https://agribot-backend.demetrix.in/fetch_rubber_prices");
+        url.searchParams.append("from_date", fromDate);
+        url.searchParams.append("to_date", toDate);
+        url.searchParams.append("grade", selectedGrade);
 
-      if (selectedMarket !== "all") {
-        url.searchParams.append("market", selectedMarket);
+        if (selectedMarket !== "all") {
+          url.searchParams.append("market", selectedMarket);
+        }
+
+        const res = await axios.get(url.toString());
+        if (res.data?.data) {
+          setPriceData(res.data.data);
+        } else {
+          setPriceData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching filtered price data:", error);
       }
+    };
 
-      const res = await axios.get(url.toString());
-      if (res.data?.data) {
-        setPriceData(res.data.data);
-      } else {
-        setPriceData([]);
-      }
-    } catch (error) {
-      console.error("Error fetching filtered price data:", error);
-    }
-  };
-
-  fetchPriceData();
-}, [fromDate, toDate, selectedMarket, selectedGrade]); 
-
+    fetchPriceData();
+  }, [fromDate, toDate, selectedMarket, selectedGrade]);
 
   if (!breadcrumbData || !immobileData) {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading graphs...</p>;
   }
 
-  // === Extract Data ===
   const genderData = [
     { name: "Male", value: breadcrumbData.total_male_workers },
     { name: "Female", value: breadcrumbData.total_female_workers },
   ];
-
-  const leadData = [
-    { name: "Lead Farmers", value: parseInt(immobileData.no_of_lead_farmers) },
-    { name: "Producer Societies", value: parseInt(immobileData.producer_society) },
-  ];
-
-  // === Intercrop Data ===
   const intercropData =
     breadcrumbData.plotwise_unique_intercrops?.map((crop) => ({
       name: crop.inter_crops,
@@ -115,12 +108,10 @@ const Graphs = ({ fromDate, toDate, selectedMarket,selectedGrade }) => {
     others: "#9ad14a",
   };
 
-const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
-  const found = intercropData.find((d) => d.name === cropName);
-  return found || { name: cropName, value: 0 };
-});
-
-
+  const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
+    const found = intercropData.find((d) => d.name === cropName);
+    return found || { name: cropName, value: 0 };
+  });
   const intercropBarColors = sortedIntercropData.map(
     (d) => INTERCROP_COLORS[d.name] || "#ccc"
   );
@@ -134,10 +125,9 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
     female: "#9acd32",
   };
 
-  
   const marketData = {};
   priceData
-    .filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m.market)) // hide these markets
+    .filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m.market))
     .forEach((marketItem) => {
       const marketName = marketItem.market;
       marketItem.prices.forEach((price) => {
@@ -155,43 +145,32 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
     new Set(priceData.map((m) => m.market).filter((m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m)))
   );
 
-  const marketColors = [
-    "#2e8b57",
-    "#cddc39",
-    "#26a69a",
-    "#8e24aa",
-    "#cddc39",
-    "#26a69a",
-  ];
+  const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#8e24aa", "#cddc39", "#26a69a"];
 
   return (
-    <div style={{ padding: "0 40px", background: "#fff" }}>
-     
+    <div style={{ padding: "0 40px", color: textColor }}>
+      {/* 🟩 Rubber Price Chart */}
       <div style={{ marginBottom: "40px" }}>
-        <h3 style={{ color: "#004225", fontSize: "20px" }}>
+        <h3 style={{ color: textColor, fontSize: "20px" }}>
           Rubber Price Comparison by Market (INR ₹)
         </h3>
 
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={priceChartData}
-            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
+          <BarChart data={priceChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+            <CartesianGrid stroke={gridColor} />
+            <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
+            <YAxis tick={{ fontSize: 12, fill: axisColor }} />
             <Tooltip
               formatter={(value) => `₹${value}`}
               contentStyle={{
-                background: "#fff",
+                background: cardBg,
                 borderRadius: 6,
-                border: "1px solid #ccc",
+                border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+                color: textColor,
               }}
               labelStyle={{ fontWeight: "bold" }}
             />
-            <Legend />
-
-            {/* INR - Bars Only */}
+            <Legend wrapperStyle={{ color: textColor }} />
             {visibleMarkets.map((market, idx) => (
               <Bar
                 key={`${market}_bar`}
@@ -206,116 +185,71 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
         </ResponsiveContainer>
       </div>
 
-     
+      {/* 🟦 Intercrops + Gender */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "10px",
+          gap: "20px",
         }}
       >
-        {/* Lead Farmers vs Producer Societies */}
-        {/* <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>
-            Lead Farmers vs Producer Societies
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={leadData}
-              layout="vertical"
-              margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
-              barSize={50}
-            >
-              <CartesianGrid stroke="#e0e0e0" />
-              <XAxis type="number" tick={{ fontSize: 12 }} />
-              <YAxis
-                dataKey="name"
-                type="category"
-                tick={{ fontSize: 13 }}
-                width={150}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "#fff",
-                  borderRadius: 6,
-                  border: "1px solid #ccc",
-                }}
-              />
-              <Bar dataKey="value" radius={[6, 6, 6, 6]}>
-                {leadData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={index === 0 ? COLORS.lead1 : COLORS.lead2}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div> */}
         {/* Intercrops Distribution */}
         <div>
-          <h3 style={{ color: "#004225", fontSize: "20px", marginBottom: "10px" }}>
+          <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
             Intercrops Distribution
           </h3>
-          <ResponsiveContainer width="500" height={400}>
-            <BarChart
-              data={sortedIntercropData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <YAxis />
-             <Tooltip
-  formatter={(value, name, props) => {
-   
-    return [`${value}`, props.payload.name];
-  }}
-  labelStyle={{ fontWeight: "bold" }}
-  contentStyle={{
-    background: "#fff",
-    borderRadius: 6,
-    border: "1px solid #ccc",
-  }}
-/>
-
-             <Legend
-  verticalAlign="bottom"
-  align="center"
-  wrapperStyle={{ marginTop: 20 }} 
-  content={() => (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: "14px", 
-        marginTop: "10px", 
-      }}
-    >
-      {sortedIntercropData.map((entry, i) => (
-        <div
-          key={i}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
-          <div
-            style={{
-              width: 14,
-              height: 14,
-              background: intercropBarColors[i],
-              borderRadius: "50%", 
-              border: "1px solid #ccc",
-              boxShadow: "0 0 2px rgba(0,0,0,0.2)",
-            }}
-          />
-          <span style={{ fontSize: 13, color: "#333" }}>{entry.name}</span>
-        </div>
-      ))}
-    </div>
-  )}
-/>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={sortedIntercropData} margin={{ top: 20, right: 30, left: 20, bottom: 30 }}>
+              <CartesianGrid stroke={gridColor} />
+              <YAxis tick={{ fill: axisColor }} />
+              <Tooltip
+                formatter={(value, name, props) => [`${value}`, props.payload.name]}
+                labelStyle={{ fontWeight: "bold" }}
+                contentStyle={{
+                  background: cardBg,
+                  borderRadius: 6,
+                  border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+                  color: textColor,
+                }}
+              />
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                wrapperStyle={{ color: textColor, marginTop: 20 }}
+                content={() => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      gap: "14px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    {sortedIntercropData.map((entry, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 14,
+                            height: 14,
+                            background: intercropBarColors[i],
+                            borderRadius: "50%",
+                            border: `1px solid ${isDark ? "#555" : "#ccc"}`,
+                          }}
+                        />
+                        <span style={{ fontSize: 13, color: textColor }}>{entry.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              />
               <Bar dataKey="value" shape={<TriangleBar />} name="Intercrops">
                 {sortedIntercropData.map((entry, index) => (
                   <Cell
@@ -328,10 +262,10 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+
+        {/* Gender Distribution */}
         <div>
-          <h3 style={{ color: "#004225", fontSize: "20px" }}>
-            Gender Distribution
-          </h3>
+          <h3 style={{ color: textColor, fontSize: "20px" }}>Gender Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -349,12 +283,17 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: "#fff",
+                  background: cardBg,
                   borderRadius: 6,
-                  border: "1px solid #ccc",
+                  border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+                  color: textColor,
                 }}
               />
-              <Legend verticalAlign="bottom" height={36} />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                wrapperStyle={{ color: textColor }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -362,4 +301,5 @@ const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
     </div>
   );
 };
+
 export default Graphs;

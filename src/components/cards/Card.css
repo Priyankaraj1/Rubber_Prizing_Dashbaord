@@ -1,13 +1,16 @@
-/* src/components/cards/Card.css */
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
-  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;   /* Even spacing */
+  align-items: stretch;
+  flex-wrap: nowrap;                /* Single row on large screens */
+  gap: 6px;
+  padding: 6px 0;
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;                 /* Prevent horizontal scroll */
 }
 
+/* Card item */
 .card-item {
   background: #ffffff;
   border-radius: 12px;
@@ -15,16 +18,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   overflow: hidden;
-  height: 100%;
+  flex: 1 0 180px;                 /* Default width per card */
+  max-width: 160px;
+  height: 80px;
 }
 
 .card-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
 /* Left accent bar */
@@ -33,81 +38,64 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 5px;
 }
 
 /* Icon circle */
 .card-icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 22px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
 /* Text */
 .card-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #2f4f39;
   margin: 0;
 }
 
 .card-value {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #003e2b;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
-/* ─────── RESPONSIVE BREAKPOINTS ─────── */
+/* ────────────── RESPONSIVE BREAKPOINTS ────────────── */
 
-/* Tablet: 3 cards per row */
-@media (max-width: 1200px) {
+/* 🖥️ Large desktop (6 per row) */
+@media (min-width: 1280px) {
   .cards-container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Mobile Large: 2 cards per row */
-@media (max-width: 768px) {
-  .cards-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
   .card-item {
-    padding: 12px 14px;
-  }
-
-  .card-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-
-  .card-title {
-    font-size: 13px;
-  }
-
-  .card-value {
-    font-size: 15px;
+    flex: 1 1 calc(16.66% - 8px);
+    max-width: calc(16.66% - 8px);
   }
 }
 
-/* Mobile Small: 1 card per row */
-@media (max-width: 480px) {
+/* 💻 Tablets (3 per row) */
+@media (max-width: 1024px) {
   .cards-container {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 
   .card-item {
-    padding: 10px 12px;
+    flex: 1 1 calc(33.33% - 8px);
+    max-width: calc(33.33% - 8px);
+    height: 85px;
+    padding: 12px 12px;
   }
 
   .card-icon {
@@ -122,5 +110,57 @@
 
   .card-value {
     font-size: 14px;
+  }
+}
+
+/* 📱 Mobile (2 per row) */
+@media (max-width: 768px) {
+  .cards-container {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .card-item {
+    flex: 1 1 calc(50% - 8px);
+    max-width: calc(50% - 8px);
+    height: 80px;
+    margin-bottom: 8px;
+  }
+
+  .card-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+
+  .card-title {
+    font-size: 12px;
+  }
+
+  .card-value {
+    font-size: 13px;
+  }
+}
+
+/* 📲 Small phones (1 per row) */
+@media (max-width: 480px) {
+  .card-item {
+    flex: 1 1 100%;
+    max-width: 100%;
+    height: 75px;
+  }
+
+  .card-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .card-title {
+    font-size: 11px;
+  }
+
+  .card-value {
+    font-size: 12px;
   }
 }

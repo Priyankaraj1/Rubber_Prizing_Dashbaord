@@ -372,26 +372,32 @@ const [toDate, setToDate] = useState(dayjs());
           </Box>
 
           {/* ── DATA ROWS ── */}
-          {market.data.map((item, idx) => (
-            <Box
-              key={idx}
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                textAlign: "center",
-                py: 1.5,
-                borderBottom:
-                  idx === market.data.length - 1
-                    ? "none"
-                    : "1px solid #e0e0e0",
-                bgcolor: "#fff",
-              }}
-            >
-              <Typography fontWeight="600">{item.grade}</Typography>
-              <Typography color="success.main">₹{item.inr}</Typography>
-              <Typography color="text.secondary">${item.usd}</Typography>
-            </Box>
-          ))}
+       {market.data.map((item, idx) => (
+  <Box
+    key={idx}
+    sx={{
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr 1fr",
+      textAlign: "center",
+      py: 1.5,
+      borderBottom:
+        idx === market.data.length - 1
+          ? "none"
+          : "1px solid #e0e0e0",
+      bgcolor: "#fff",
+      fontWeight: "bold", // 🔥 Makes all text in this row bold
+    }}
+  >
+    <Typography sx={{ fontWeight: "bold" }}>{item.grade}</Typography>
+    <Typography sx={{ fontWeight: "bold" }} color="success.main">
+      ₹{item.inr}
+    </Typography>
+    <Typography sx={{ fontWeight: "bold" }} color="text.secondary">
+      ${item.usd}
+    </Typography>
+  </Box>
+))}
+
         </Paper>
       ))}
     </Box>

@@ -1,13 +1,11 @@
 // App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import { useState, useEffect, useMemo } from "react";
+import { ThemeProvider, CssBaseline, CircularProgress, Box } from "@mui/material";
+import { getTheme } from "./theme"; // import your theme config
 
 import AuthPage from "./pages/AuthPage";
-import MainLayout from "./layouts/MainLayout";  
+import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import FarmersTable from "./pages/FarmersTable";
 import Advisory from "./pages/Advisory";
@@ -16,7 +14,7 @@ import Enquiry from "./pages/Enquiry";
 import AdvisoryType from "./pages/AdvisoryType";
 
 export default function App() {
-  const [darkMode] = useState(false);
+  const [mode, setMode] = useState(localStorage.getItem("themeMode") || "light");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -26,17 +24,22 @@ export default function App() {
     setCheckingAuth(false);
   }, []);
 
-  const handleLogin = () => setIsAuthenticated(true);
+  const toggleColorMode = () => {
+    setMode((prevMode) => {
+      const nextMode = prevMode === "light" ? "dark" : "light";
+      localStorage.setItem("themeMode", nextMode);
+      return nextMode;
+    });
+  };
 
+  const theme = useMemo(() => getTheme(mode), [mode]);
+
+  const handleLogin = () => setIsAuthenticated(true);
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
     setIsAuthenticated(false);
   };
-
-  const theme = createTheme({
-    palette: { mode: darkMode ? "dark" : "light" },
-  });
 
   const PrivateRoute = ({ children }) =>
     isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -53,15 +56,13 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Routes>
-        {/* Login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AuthPage onLogin={handleLogin} />} />
 
-        {/* Protected Section */}
         <Route
           element={
             <PrivateRoute>
-              <MainLayout onLogout={handleLogout} />
+              <MainLayout onLogout={handleLogout} toggleColorMode={toggleColorMode} />
             </PrivateRoute>
           }
         >
