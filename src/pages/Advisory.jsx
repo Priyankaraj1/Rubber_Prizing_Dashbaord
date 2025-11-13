@@ -4,7 +4,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   Box,
   Button,
-  Paper,
   IconButton,
   Typography,
   TextField,
@@ -21,6 +20,7 @@ import {
   CircularProgress,
   Alert,
   Link,
+  Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -43,8 +43,8 @@ const ADVISORY_TYPES = [
 
 const Advisory = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDark = theme.palette.mode === "dark";
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // State
   const [advisories, setAdvisories] = useState([]);
@@ -61,13 +61,7 @@ const Advisory = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [showFiles, setShowFiles] = useState({});
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
   const pdfRef = useRef();
   const imgRef = useRef();
@@ -216,22 +210,19 @@ const Advisory = () => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
-  const paginated = filtered.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box
-      elevation={3}
-      sx={{
-        maxWidth: 1200,
-        mx: "auto",
-        p: { xs: 2, sm: 3, md: 4 },
-        borderRadius: 3,
-        bgcolor: isDark ? "#1e1e1e" : "background.paper",
-      }}
-    >
+             elevation={3}
+             sx={{
+               maxWidth: 1200,
+               mx: "auto",
+               p: { xs: 2, sm: 3, md: 4 },
+               borderRadius: 3,
+               bgcolor: isDark ? "#1e1e1e" : "background.paper",
+             }}
+           >
       {/* Header */}
       <Box
         sx={{
@@ -287,205 +278,132 @@ const Advisory = () => {
 
       {/* Table */}
       {!loading && (
-       <Box
-  
->
-  <table
-    style={{
-      width: "100%",
-      borderCollapse: "separate",
-      borderSpacing: "0 8px",
-    }}
-  >
-    <thead>
-      <tr
-        style={{
-          backgroundColor: "#37474f",
-          color: "white",
-          textAlign: "left",
-        }}
-      >
-        {["Id", "Type", "Title", "Description", "Action"].map((h, i) => (
-          <th
-            key={i}
+        <Box>
+          <table
             style={{
-              padding: "12px 16px",
-              fontWeight: 400,
-              fontSize: "0.85rem",
-              borderTopLeftRadius: i === 0 ? "8px" : 0,
-              borderTopRightRadius: i === 4 ? "8px" : 0,
+              width: "100%",
+              borderCollapse: "separate",
+              borderSpacing: "0 8px",
             }}
           >
-            {h}
-          </th>
-        ))}
-      </tr>
-    </thead>
-<tbody>
-  {paginated.map((adv) => (
-    <React.Fragment key={adv.id}>
-      <tr
-        style={{
-          backgroundColor: "#fff",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
-          borderRadius: "6px",
-        }}
-      >
-        <td style={{ padding: "6px 10px", fontSize: "0.85rem" }}>{adv.id}</td>
-        <td style={{ padding: "6px 10px", fontSize: "0.85rem" }}>
-          {ADVISORY_TYPES.find((t) => t.id === adv.advisory_type)?.name ||
-            adv.advisory_type}
-        </td>
-        <td
-          style={{
-            padding: "6px 10px",
-            fontWeight: 500,
-            fontSize: "0.9rem",
-          }}
-        >
-          {adv.title}
-        </td>
-        <td
-          style={{
-            padding: "6px 10px",
-            maxWidth: 380,
-            whiteSpace: "normal",
-            lineHeight: "1.4",
-            fontSize: "0.85rem",
-            color: "#333",
-          }}
-        >
-          {adv.description}
-        </td>
-        <td
-          style={{
-            padding: "6px 10px",
-            textAlign: "right",
-            width: "70px",
-          }}
-        >
-          <IconButton
-            size="small"
-            onClick={(e) => handleMenuOpen(e, adv)}
-            sx={{ color: "#555" }}
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-        </td>
-      </tr>
+            <thead>
+              <tr
+                style={{
+                  backgroundColor: isDark ? "#1f1f1f" : "#37474f",
+                  color: isDark ? "#fff" : "#fff",
+                  textAlign: "left",
+                }}
+              >
+                {["Id", "Type", "Title", "Description", "Action"].map((h, i) => (
+                  <th
+                    key={i}
+                    style={{
+                      padding: "12px 16px",
+                      fontWeight: 400,
+                      fontSize: "0.85rem",
+                      borderTopLeftRadius: i === 0 ? "8px" : 0,
+                      borderTopRightRadius: i === 4 ? "8px" : 0,
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {paginated.map((adv) => (
+                <React.Fragment key={adv.id}>
+                  <tr
+                    style={{
+                      backgroundColor: isDark ? "#1e1e1e" : "#fff",
+                      boxShadow: isDark ? "none" : "0 1px 2px rgba(0,0,0,0.08)",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    <td style={{ padding: "6px 10px", fontSize: "0.85rem" }}>{adv.id}</td>
+                    <td style={{ padding: "6px 10px", fontSize: "0.85rem" }}>
+                      {ADVISORY_TYPES.find((t) => t.id === adv.advisory_type)?.name || adv.advisory_type}
+                    </td>
+                    <td style={{ padding: "6px 10px", fontWeight: 500, fontSize: "0.9rem" }}>
+                      {adv.title}
+                    </td>
+                    <td
+                      style={{
+                        padding: "6px 10px",
+                        maxWidth: 380,
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        fontSize: "0.85rem",
+                        color: isDark ? "#ddd" : "#333",
+                      }}
+                    >
+                      {adv.description}
+                    </td>
+                    <td style={{ padding: "6px 10px", textAlign: "right", width: "70px" }}>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, adv)}
+                        sx={{ color: isDark ? "#ccc" : "#555" }}
+                      >
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
+                    </td>
+                  </tr>
 
-      {/* Show Files Row */}
-      {showFiles[adv.id] && (
-        <tr>
-          <td
-            colSpan={5}
-            style={{
-              padding: "6px 12px",
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <Box
+                  {/* Show Files Row */}
+                  {showFiles[adv.id] && (
+                    <tr>
+                      <td colSpan={5} style={{ padding: "6px 12px", backgroundColor: isDark ? "#1b1b1b" : "#f9f9f9" }}>
+                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", alignItems: "center" }}>
+                          {adv.document && (
+                            <Link href={adv.document} target="_blank" rel="noopener" sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              color: "#d32f2f",
+                              textDecoration: "none",
+                              "&:hover": { textDecoration: "underline" },
+                              fontSize: "0.8rem",
+                            }}>
+                              <PictureAsPdfIcon fontSize="small" />
+                              PDF Document
+                            </Link>
+                          )}
+                          {adv.image && <Link href={adv.image} target="_blank" rel="noopener" color="primary" sx={{ fontSize: "0.8rem" }}>Image</Link>}
+                          {adv.video && <Link href={adv.video} target="_blank" rel="noopener" color="primary" sx={{ fontSize: "0.8rem" }}>Video</Link>}
+                          {adv.audio && <Link href={adv.audio} target="_blank" rel="noopener" color="primary" sx={{ fontSize: "0.8rem" }}>Audio</Link>}
+                        </Box>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <Box sx={{ display: "flex", justifyContent: { xs: "center", sm: "flex-end" }, mt: 2 }}>
+            <TablePagination
+              component="div"
+              count={filtered.length}
+              page={page}
+              onPageChange={handlePageChange}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleRowsChange}
+              rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={"Rows per page:"}
               sx={{
-                display: "flex",
-                gap: 1.5,
-                flexWrap: "wrap",
-                alignItems: "center",
+                "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                  color: isDark ? "#fff" : "inherit",
+                },
               }}
-            >
-              {adv.document && (
-                <Link
-                  href={adv.document}
-                  target="_blank"
-                  rel="noopener"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: "#d32f2f",
-                    textDecoration: "none",
-                    "&:hover": { textDecoration: "underline" },
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  <PictureAsPdfIcon fontSize="small" />
-                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-                    PDF Document
-                  </Typography>
-                </Link>
-              )}
-              {adv.image && (
-                <Link
-                  href={adv.image}
-                  target="_blank"
-                  rel="noopener"
-                  color="primary"
-                  sx={{ fontSize: "0.8rem" }}
-                >
-                  Image
-                </Link>
-              )}
-              {adv.video && (
-                <Link
-                  href={adv.video}
-                  target="_blank"
-                  rel="noopener"
-                  color="primary"
-                  sx={{ fontSize: "0.8rem" }}
-                >
-                  Video
-                </Link>
-              )}
-              {adv.audio && (
-                <Link
-                  href={adv.audio}
-                  target="_blank"
-                  rel="noopener"
-                  color="primary"
-                  sx={{ fontSize: "0.8rem" }}
-                >
-                  Audio
-                </Link>
-              )}
-            </Box>
-          </td>
-        </tr>
-      )}
-    </React.Fragment>
-  ))}
-</tbody>
-
-  </table>
-
-  {/* Pagination */}
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: { xs: "center", sm: "flex-end" },
-      mt: 2,
-    }}
-  >
-    <TablePagination
-      component="div"
-      count={filtered.length}
-      page={page}
-      onPageChange={handlePageChange}
-      rowsPerPage={rowsPerPage}
-      onRowsPerPageChange={handleRowsChange}
-      rowsPerPageOptions={[5, 10, 25]}
-      labelRowsPerPage={"Rows per page:"}
-    />
-  </Box>
-</Box>
-
+            />
+          </Box>
+        </Box>
       )}
 
       {/* Action Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        PaperProps={{ sx: { minWidth: 150 } }}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose} PaperProps={{ sx: { minWidth: 150 } }}>
         <MenuItem onClick={handleEdit} sx={{ gap: 1 }}>
           <EditIcon fontSize="small" /> Edit
         </MenuItem>
@@ -501,10 +419,7 @@ const Advisory = () => {
       <Dialog open={openAdd || openEdit} onClose={() => { setOpenAdd(false); setOpenEdit(false); }} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold" }}>
           {openAdd ? "Add Advisory" : "Edit Advisory"}
-          <IconButton
-            onClick={() => { setOpenAdd(false); setOpenEdit(false); }}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
+          <IconButton onClick={() => { setOpenAdd(false); setOpenEdit(false); }} sx={{ position: "absolute", right: 8, top: 8 }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -572,16 +487,8 @@ const Advisory = () => {
             </Box>
           </DialogContent>
           <DialogActions sx={{ p: 2, gap: 1 }}>
-            <Button onClick={() => { setOpenAdd(false); setOpenEdit(false); }}>
-              CANCEL
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{ bgcolor: "#7B984C", "&:hover": { bgcolor: "#7B984C" } }}
-            >
-              SAVE
-            </Button>
+            <Button onClick={() => { setOpenAdd(false); setOpenEdit(false); }}>CANCEL</Button>
+            <Button type="submit" variant="contained" sx={{ bgcolor: "#7B984C", "&:hover": { bgcolor: "#7B984C" } }}>SAVE</Button>
           </DialogActions>
         </form>
       </Dialog>
@@ -590,18 +497,14 @@ const Advisory = () => {
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
         <DialogTitle>Delete Advisory?</DialogTitle>
         <DialogContent>
-          <Typography>
-            Are you sure you want to delete <strong>{selected?.title}</strong>?
-          </Typography>
+          <Typography>Are you sure you want to delete <strong>{selected?.title}</strong>?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDelete(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">Delete</Button>
         </DialogActions>
       </Dialog>
-     </Box>
+    </Box>
   );
 };
 

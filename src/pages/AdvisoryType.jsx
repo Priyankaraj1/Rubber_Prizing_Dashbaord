@@ -1,4 +1,3 @@
-// src/pages/AdvisoryType.jsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -24,14 +23,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-
 const API_BASE = "https://rubber-backend.solidaridadasia.com/api";
-
 const AdvisoryType = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  // State
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [types, setTypes] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +37,7 @@ const AdvisoryType = () => {
   const [search, setSearch] = useState("");
   const [openAdd, setOpenAdd] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const isDark = theme.palette.mode === "dark";
 
   const {
     register,
@@ -48,8 +45,6 @@ const AdvisoryType = () => {
     reset,
     formState: { errors },
   } = useForm();
-
-  // Fetch Advisory Types
   useEffect(() => {
     const fetchTypes = async () => {
       try {
@@ -67,8 +62,6 @@ const AdvisoryType = () => {
     };
     fetchTypes();
   }, []);
-
-  // Search
   useEffect(() => {
     const term = search.toLowerCase();
     const result = types.filter((t) =>
@@ -78,13 +71,11 @@ const AdvisoryType = () => {
     setPage(0);
   }, [search, types]);
 
-  // Open Add Modal
+  
   const handleAdd = () => {
     reset();
     setOpenAdd(true);
   };
-
-  // Submit Add
   const onAddSubmit = async (data) => {
     try {
       const res = await axios.post(`${API_BASE}/addAdvisoryType`, {
@@ -97,7 +88,7 @@ const AdvisoryType = () => {
     }
   };
 
-  // Delete
+  
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this advisory type?")) return;
     try {
@@ -111,29 +102,31 @@ const AdvisoryType = () => {
     }
   };
 
-  // Pagination
+  
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleRowsChange = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
+
   const paginated = filtered.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
   return (
-    <Box
-      elevation={3}
-      sx={{
-        maxWidth: 1000,
-        mx: "auto",
-        p: { xs: 2, sm: 3, md: 4 },
-        borderRadius: 3,
-        bgcolor: "background.paper",
-      }}
-    >
-      {/* Header */}
+     <Box
+          elevation={3}
+          sx={{
+            maxWidth: 1200,
+            mx: "auto",
+            p: { xs: 2, sm: 3, md: 4 },
+            borderRadius: 3,
+            bgcolor: isDark ? "#1e1e1e" : "background.paper",
+          }}
+        >
+
+      
       <Box
         sx={{
           display: "flex",
@@ -152,7 +145,7 @@ const AdvisoryType = () => {
             borderRadius: 2,
             textTransform: "none",
             bgcolor: "#7B984C",
-            "&:hover": { bgcolor: "#7B984C" },
+            "&:hover": { bgcolor: "#6d8644" },
             width: { xs: "100%", sm: "auto" },
           }}
         >
@@ -172,45 +165,59 @@ const AdvisoryType = () => {
             ),
           }}
           sx={{
-            width: { xs: "100%", sm: 300 },
+            width: { xs: "100%", sm: 280, md: 320 },
             "& .MuiOutlinedInput-root": { borderRadius: 2 },
           }}
         />
       </Box>
 
-      {/* Loading / Error */}
       {loading && (
         <Box textAlign="center" py={4}>
           <CircularProgress />
         </Box>
       )}
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      {/* Table */}
       {!loading && (
-        <Box sx={{ overflowX: "auto" }}>
+        <Box
+          sx={{
+            overflowX: "auto",
+            "&::-webkit-scrollbar": { height: 6 },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: 3,
+            },
+          }}
+        >
           <table
             style={{
-      width: "100%",
-      borderCollapse: "separate",
-      borderSpacing: "0 8px",
-    }}
+              width: "100%",
+              borderCollapse: "separate",
+              borderSpacing: "0 8px",
+              minWidth: 450,
+            }}
           >
             <thead>
               <tr
-               style={{
-          backgroundColor: "#37474f",
-          color: "white",
-          textAlign: "left",
-        }}
+                style={{
+                  backgroundColor: "#37474f",
+                  
+                  color: "white",
+                  textAlign: "left",
+                }}
               >
                 {["S.No", "Advisory Name", "Delete"].map((h) => (
                   <th
                     key={h}
                     style={{
                       padding: "10px 12px",
-              fontWeight: 400,
-              fontSize: "0.85rem",
+                      fontWeight: 500,
+                      fontSize: "0.9rem",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {h}
@@ -223,15 +230,22 @@ const AdvisoryType = () => {
                 <tr
                   key={type.id}
                   style={{
-                    backgroundColor: "white",
+                    backgroundColor: "#fff",
                     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                     backgroundColor: isDark ? "#1e1e1e" : "white",
                     borderRadius: "8px",
                   }}
                 >
                   <td style={{ padding: "10px 12px" }}>
                     {page * rowsPerPage + index + 1}
                   </td>
-                  <td style={{ padding: "10px 12px", fontWeight: 500 }}>
+                  <td
+                    style={{
+                      padding: "10px 12px",
+                      fontWeight: 500,
+                      wordBreak: "break-word",
+                    }}
+                  >
                     {type.name}
                   </td>
                   <td style={{ padding: "10px 12px", textAlign: "center" }}>
@@ -251,9 +265,14 @@ const AdvisoryType = () => {
               ))}
             </tbody>
           </table>
-
-          {/* Pagination */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2,
+              px: { xs: 1, sm: 2 },
+            }}
+          >
             <TablePagination
               component="div"
               count={filtered.length}
@@ -263,14 +282,23 @@ const AdvisoryType = () => {
               onRowsPerPageChange={handleRowsChange}
               rowsPerPageOptions={[5, 10, 25]}
               labelRowsPerPage={isMobile ? "Rows:" : "Rows per page:"}
+              sx={{
+                "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
+                  {
+                    fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                  },
+              }}
             />
           </Box>
         </Box>
       )}
-
-      {/* Add Modal */}
-      <Dialog open={openAdd} onClose={() => setOpenAdd(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: "bold" }}>
+      <Dialog
+        open={openAdd}
+        onClose={() => setOpenAdd(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: "bold", pb: 1 }}>
           Add Advisory
           <IconButton
             onClick={() => setOpenAdd(false)}
@@ -284,27 +312,47 @@ const AdvisoryType = () => {
             <TextField
               label="Advisory Name"
               fullWidth
-              {...register("name", {
-                required: "Advisory name is required",
-              })}
+              {...register("name", { required: "Advisory name is required" })}
               error={!!errors.name}
               helperText={errors.name?.message}
             />
           </DialogContent>
-          <DialogActions sx={{ p: 2, gap: 1 }}>
-            <Button onClick={() => setOpenAdd(false)}>CANCEL</Button>
+          <DialogActions
+            sx={{
+              p: 2,
+              gap: 1,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Button
+              onClick={() => setOpenAdd(false)}
+              variant="outlined"
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+              }}
+            >
+              Cancel
+            </Button>
             <Button
               type="submit"
               variant="contained"
-              sx={{ bgcolor: "#7B984C", "&:hover": { bgcolor: "#7B984C" } }}
+              sx={{
+                bgcolor: "#7B984C",
+                "&:hover": { bgcolor: "#6d8644" },
+                borderRadius: 2,
+              }}
             >
               Add
             </Button>
           </DialogActions>
-        </form>
+        </form> 
       </Dialog>
     </Box>
   );
 };
 
 export default AdvisoryType;
+
+

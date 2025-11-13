@@ -35,7 +35,7 @@ const API_BASE = "https://rubber-backend.solidaridadasia.com/api";
 const Enquiry = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const isDark = theme.palette.mode === "dark";
   // State
   const [enquiries, setEnquiries] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -166,16 +166,16 @@ const handleReply = (enquiry) => {
   );
 
   return (
-    <Box
-      elevation={3}
-      sx={{
-        maxWidth: 1400,
-        mx: "auto",
-        p: { xs: 2, sm: 3, md: 4 },
-        borderRadius: 3,
-        bgcolor: "background.paper",
-      }}
-    >
+     <Box
+          elevation={3}
+          sx={{
+            maxWidth: 1200,
+            mx: "auto",
+            p: { xs: 2, sm: 3, md: 4 },
+            borderRadius: 3,
+            bgcolor: isDark ? "#1e1e1e" : "background.paper",
+          }}
+        >
       {/* Search */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
         <TextField
@@ -244,6 +244,7 @@ const handleReply = (enquiry) => {
       style={{
         backgroundColor: "white",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+         backgroundColor: isDark ? "#1e1e1e" : "white",
         borderRadius: "8px",
       }}
     >
