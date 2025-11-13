@@ -1,0 +1,55 @@
+
+
+
+.sidebar-root .MuiDrawer-paper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: inherit; 
+  color: inherit;          
+}
+
+.sidebar-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.sidebar-logo {
+  width: 140px;
+  height: auto;
+}
+
+.sidebar-divider {
+  opacity: 0;
+}
+
+.sidebar-menu {
+  flex: 1;
+}
+
+.sidebar-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.sidebar-item {
+  transition: all 0.3s ease;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin: 6px 12px;
+  border-radius: 8px;
+}
+
+.sidebar-item:hover,
+.sidebar-link.active .sidebar-item {
+  background-color: #f7f7f7; 
+  color: #7B984C;          
+}
+
+.sidebar-item:hover .sidebar-icon,
+.sidebar-link.active .sidebar-icon {
+  color: #7B984C;
+}
