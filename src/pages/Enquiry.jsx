@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SendIcon from "@mui/icons-material/Send";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ReplyIcon from "@mui/icons-material/Reply";
 import CloseIcon from "@mui/icons-material/Close";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ImageIcon from "@mui/icons-material/Image";
@@ -308,7 +308,7 @@ const handleReply = (enquiry) => {
       <td style={{ padding: "10px 12px", textAlign: "center" }}>
         {enq.admin_reply && enq.admin_reply.length > 0 ? (
           <IconButton onClick={() => handleView(enq)} color="primary">
-            <ArrowDownwardIcon />
+            <ReplyIcon />
           </IconButton>
         ) : (
           <IconButton onClick={() => handleReply(enq)} color="success">
@@ -415,73 +415,73 @@ const handleReply = (enquiry) => {
   >
     <CloseIcon />
   </IconButton>
-  <DialogContent dividers>
-    {selected?.admin_reply?.[0] ? (
-      <Box sx={{ display: "grid", gap: 2 }}>
-        <Typography><strong>Answer:</strong> {selected.admin_reply[0].query_answer}</Typography>
+    <DialogContent dividers>
+      {selected?.admin_reply?.[0] ? (
+        <Box sx={{ display: "grid", gap: 2 }}>
+          <Typography><strong>Answer:</strong> {selected.admin_reply[0].query_answer}</Typography>
 
-        {selected.admin_reply[0].image_answer && (
-          <Box>
-            <Typography variant="subtitle2">Image:</Typography>
-            <img
-              src={selected.admin_reply[0].image_answer}
-              alt="Reply Image"
-              style={{
-                width: "100%",
-                maxHeight: 250,
-                objectFit: "contain",
-                borderRadius: 8,
-              }}
-            />
-          </Box>
-        )}
+          {selected.admin_reply[0].image_answer && (
+            <Box>
+              <Typography variant="subtitle2">Image:</Typography>
+              <img
+                src={selected.admin_reply[0].image_answer}
+                alt="Reply Image"
+                style={{
+                  width: "100%",
+                  maxHeight: 250,
+                  objectFit: "contain",
+                  borderRadius: 8,
+                }}
+              />
+            </Box>
+          )}
 
-        {selected.admin_reply[0].video_answer && (
-          <Box>
-            <Typography variant="subtitle2">Video:</Typography>
-            <video
-              src={selected.admin_reply[0].video_answer}
-              controls
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                maxHeight: 250,
-              }}
-            />
-          </Box>
-        )}
+          {selected.admin_reply[0].video_answer && (
+            <Box>
+              <Typography variant="subtitle2">Video:</Typography>
+              <video
+                src={selected.admin_reply[0].video_answer}
+                controls
+                style={{
+                  width: "100%",
+                  borderRadius: 8,
+                  maxHeight: 250,
+                }}
+              />
+            </Box>
+          )}
 
-        {selected.admin_reply[0].audio_answer && (
-          <Box>
-            <Typography variant="subtitle2">Audio:</Typography>
-            <audio
-              controls
-              src={selected.admin_reply[0].audio_answer}
-              style={{ width: "100%" }}
-            />
-          </Box>
-        )}
+          {selected.admin_reply[0].audio_answer && (
+            <Box>
+              <Typography variant="subtitle2">Audio:</Typography>
+              <audio
+                controls
+                src={selected.admin_reply[0].audio_answer}
+                style={{ width: "100%" }}
+              />
+            </Box>
+          )}
 
-        {selected.admin_reply[0].docs_pdf && (
-          <Box>
-            <Typography variant="subtitle2">Document/PDF:</Typography>
-            <iframe
-              src={selected.admin_reply[0].docs_pdf}
-              title="PDF Preview"
-              style={{
-                width: "100%",
-                height: 400,
-                border: "1px solid #ccc",
-                borderRadius: 8,
-              }}
-            />
-          </Box>
-        )}
-      </Box>
-    ) : (
-      <Typography>No reply yet.</Typography>
-    )}
-  </DialogContent>
+          {selected.admin_reply[0].docs_pdf && (
+            <Box>
+              <Typography variant="subtitle2">Document/PDF:</Typography>
+              <iframe
+                src={selected.admin_reply[0].docs_pdf}
+                title="PDF Preview"
+                style={{
+                  width: "100%",
+                  height: 400,
+                  border: "1px solid #ccc",
+                  borderRadius: 8,
+                }}
+              />
+            </Box>
+          )}
+        </Box>
+      ) : (
+        <Typography>No reply yet.</Typography>
+      )}
+    </DialogContent>
   <DialogActions>
     <Button onClick={() => setOpenView(false)}>Close</Button>
   </DialogActions>

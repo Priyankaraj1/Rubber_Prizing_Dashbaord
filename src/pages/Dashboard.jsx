@@ -332,77 +332,85 @@ const [toDate, setToDate] = useState(dayjs());
         gap: { xs: 2, md: 3 },
       }}
     >
-      {filteredPrices.map((market) => (
-        <Paper
-          key={market.market}
-          elevation={2}
-          sx={{
-            borderRadius: "24px",
-            overflow: "hidden",
-            bgcolor: "#fdfdfd",
-          }}
-        >
-          {/* ── MARKET HEADER ── */}
-          <Box
-            sx={{
-              bgcolor: "#5e8d3e",
-              color: "white",
-              py: 1.5,
-              textAlign: "center",
-              fontWeight: 600,
-              fontSize: { xs: "1rem", md: "1.1rem" },
-            }}
-          >
-            {market.market}
-          </Box>
-
-          {/* ── SUB-HEADER (Grade | INR | USD) ── */}
-          <Box
-            sx={{
-              bgcolor: "#6ea84a",
-              color: "white",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              textAlign: "center",
-              py: 1,
-              fontWeight: 500,
-              fontSize: { xs: "0.8rem", md: "0.9rem" },
-            }}
-          >
-            <Typography>Grade</Typography>
-            <Typography>INR</Typography>
-            <Typography>USD</Typography>
-          </Box>
-
-          {/* ── DATA ROWS ── */}
-       {market.data.map((item, idx) => (
-  <Box
-    key={idx}
+    {filteredPrices.map((market) => (
+  <Paper
+    key={market.market}
+    elevation={2}
     sx={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr 1fr",
-      textAlign: "center",
-      py: 1.5,
-      borderBottom:
-        idx === market.data.length - 1
-          ? "none"
-          : "1px solid #e0e0e0",
-      bgcolor: "#fff",
-      fontWeight: "bold", // 🔥 Makes all text in this row bold
+      borderRadius: "24px",
+      overflow: "hidden",
+      bgcolor: theme.palette.background.paper,
     }}
   >
-    <Typography sx={{ fontWeight: "bold" }}>{item.grade}</Typography>
-    <Typography sx={{ fontWeight: "bold" }} color="success.main">
-      ₹{item.inr}
-    </Typography>
-    <Typography sx={{ fontWeight: "bold" }} color="text.secondary">
-      ${item.usd}
-    </Typography>
-  </Box>
+    {/* ── MARKET HEADER ── */}
+    <Box
+      sx={{
+        bgcolor: theme.palette.success.dark,
+        color: theme.palette.common.white,
+        py: 1.5,
+        textAlign: "center",
+        fontWeight: 600,
+        fontSize: { xs: "1rem", md: "1.1rem" },
+      }}
+    >
+      {market.market}
+    </Box>
+
+    {/* ── SUB-HEADER (Grade | INR | USD) ── */}
+    <Box
+      sx={{
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? theme.palette.success.main
+            : "#6ea84a",
+        color: "white",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        textAlign: "center",
+        py: 1,
+        fontWeight: 500,
+        fontSize: { xs: "0.8rem", md: "0.9rem" },
+      }}
+    >
+      <Typography>Grade</Typography>
+      <Typography>INR</Typography>
+      <Typography>USD</Typography>
+    </Box>
+
+    {/* ── DATA ROWS ── */}
+    {market.data.map((item, idx) => (
+      <Box
+        key={idx}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          textAlign: "center",
+          py: 1.5,
+          borderBottom:
+            idx === market.data.length - 1
+              ? "none"
+              : `1px solid ${theme.palette.divider}`,
+          bgcolor: theme.palette.background.default,
+          fontWeight: "bold",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold" }}>{item.grade}</Typography>
+
+        <Typography sx={{ fontWeight: "bold" }} color="success.main">
+          ₹{item.inr}
+        </Typography>
+
+        <Typography
+          sx={{ fontWeight: "bold" }}
+          color={theme.palette.mode === "dark" ? "grey.300" : "text.secondary"}
+        >
+          ${item.usd}
+        </Typography>
+      </Box>
+    ))}
+  </Paper>
 ))}
 
-        </Paper>
-      ))}
     </Box>
   </Box>
 )}

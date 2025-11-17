@@ -211,7 +211,8 @@ const visibleMarkets =
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
       {/* 🟩 Rubber Price Chart */}
-   <div style={{ width: "100%", height: 500 }}>  
+  <div style={{ width: "100%", height: 500, marginBottom: "40px" }}>
+ 
      <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Rubber Prizing 
     </h3> {/* Increased height */}
@@ -396,7 +397,7 @@ const visibleMarkets =
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
-   <ResponsiveContainer width="480" height={380}>
+   <ResponsiveContainer width="380" height={380}>
       <PieChart>
         <Pie
           data={[
@@ -406,8 +407,8 @@ const visibleMarkets =
           ]}
           cx="50%"
           cy="50%"
-          outerRadius={130}
-          label={({ name, value }) => `${name}: ${value.toFixed(2)}`}
+          outerRadius={100}
+          label={({ name, value }) => `${value.toFixed(2)}ha`}
           dataKey="value"
         >
           <Cell fill="#7cb342" />

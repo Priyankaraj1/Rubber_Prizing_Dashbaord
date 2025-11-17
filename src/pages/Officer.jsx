@@ -121,18 +121,28 @@ const Officer = () => {
   
   // Toggle status (PATCH/PUT) – replace URL with your real endpoint
 const toggleStatus = async (officer) => {
-  const newStatus = !officer.status;
-  try {
-   
-    console.log("Toggle status", officer.id, "→", newStatus);
+  const newStatus = officer.status ? 0 : 1; // 1=enable, 0=disable
 
+  try {
+    // Call API
+    await axios.get(
+      `https://rubber-backend.solidaridadasia.com/api/updateOfficerStatus/${officer.id}/${newStatus}`
+    );
+
+    console.log("Status updated:", officer.id, "→", newStatus);
+
+    // Update UI instantly
     setOfficers((prev) =>
-      prev.map((o) => (o.id === officer.id ? { ...o, status: newStatus } : o))
+      prev.map((o) =>
+        o.id === officer.id ? { ...o, status: newStatus } : o
+      )
     );
   } catch (err) {
+    console.error(err);
     alert("Failed to update status.");
   }
 };
+
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleRowsChange = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
@@ -347,7 +357,7 @@ const toggleStatus = async (officer) => {
               label="Phone Number"
               fullWidth
               margin="normal"
-              defaultValue="9696596965"
+              defaultValue=""
               {...register("phone", {
                 required: "Phone is required",
                 pattern: {
