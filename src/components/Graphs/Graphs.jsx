@@ -1,19 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  LineChart,
-  Line,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-} from "recharts";
+import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,LineChart,Line,Legend,PieChart,Pie,Cell,ResponsiveContainer,} from "recharts";
 import { LineChartPro } from "@mui/x-charts-pro/LineChartPro";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -36,18 +22,15 @@ const TriangleBar = (props) => {
 const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-
   const axisColor = isDark ? "#E0E0E0" : "#333";
   const textColor = isDark ? "#FFFFFF" : "#000000";
   const gridColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
   const cardBg = isDark ? "#1E1E1E" : "#FFFFFF";
-
   const [breadcrumbData, setBreadcrumbData] = useState(null);
   const [immobileData, setImmobileData] = useState(null);
   const [priceData, setPriceData] = useState([]);
-
   // Market name mapping specifically for the API
-const MARKET_API_MAP = {
+  const MARKET_API_MAP = {
   agartala: "Agartala",
   kochi: "Kochi",
   kottayam: "Kottayam",
@@ -55,7 +38,7 @@ const MARKET_API_MAP = {
   pulpally: "Pulpally",
 };
 
-  // 🔹 Fetch static data (once)
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,7 +55,7 @@ const MARKET_API_MAP = {
     fetchData();
   }, []);
 
-  // 🔹 Fetch price data only if both dates are selected
+  
   useEffect(() => {
     if (!fromDate || !toDate) {
       setPriceData([]);
@@ -433,7 +416,6 @@ const visibleMarkets =
     </ResponsiveContainer>
   </div>
 
-  {/* 📊 Mature vs Immature Trees */}
   <div>
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Mature vs Immature Trees
