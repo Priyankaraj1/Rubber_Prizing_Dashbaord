@@ -205,7 +205,7 @@ const [toDate, setToDate] = useState(dayjs());
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom>
             Rubber Prices for{" "}
-            <Typography component="span" color="primary" fontWeight="bold">
+            <Typography component="span" color="green" fontWeight="bold">
               {priceDateUsed === "No data available"
                 ? "No Data"
                 : dayjs(priceDateUsed).format("DD MMMM YYYY")}
@@ -459,9 +459,18 @@ const [toDate, setToDate] = useState(dayjs());
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenStats(false)}>Cancel</Button>
-            <Button onClick={handleUpdateStats} variant="contained" bgcolor="#4caf50">
-              Update
-            </Button>
+           <Button
+  onClick={handleUpdateStats}
+  variant="contained"
+  sx={{
+    bgcolor: "#4caf50",
+    "&:hover": { bgcolor: "#388e3c" },
+    color: "#fff",
+  }}
+>
+  Update
+</Button>
+
           </DialogActions>
         </Dialog>
 

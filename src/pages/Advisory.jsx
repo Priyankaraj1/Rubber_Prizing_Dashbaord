@@ -22,6 +22,8 @@ import {
   Link,
   Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
@@ -45,7 +47,7 @@ const Advisory = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+const navigate = useNavigate();
   // State
   const [advisories, setAdvisories] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -237,7 +239,8 @@ const Advisory = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={handleAdd}
+onClick={() => navigate("/add-advisory")}
+
           sx={{
             borderRadius: 2,
             textTransform: "none",

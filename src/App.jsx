@@ -12,6 +12,7 @@ import Advisory from "./pages/Advisory";
 import Officer from "./pages/Officer";
 import Enquiry from "./pages/Enquiry";
 import AdvisoryType from "./pages/AdvisoryType";
+import AddAdvisory from "./pages/AddAdvisory";
 
 export default function App() {
   const [mode, setMode] = useState(localStorage.getItem("themeMode") || "light");
@@ -72,6 +73,8 @@ export default function App() {
           <Route path="/Officers" element={<Officer />} />
           <Route path="/Enquiries" element={<Enquiry />} />
           <Route path="/AdvisoryType" element={<AdvisoryType />} />
+          <Route path="/add-advisory" element={<AddAdvisory />} />
+
         </Route>
       </Routes>
     </ThemeProvider>

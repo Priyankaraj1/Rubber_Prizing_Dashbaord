@@ -172,24 +172,22 @@ if (selectedMarket !== "all") {
   return null;
 };
 
- const marketData = {};
+const marketData = {};
+
 priceData
   .filter((m) => {
-    // Skip unwanted markets
-    if (["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m.market)) return false;
-
-    // Apply selected market filter
-  if (
-  selectedMarket !== "all" &&
-  m.market.toLowerCase() !== selectedMarket.toLowerCase()
-)
-  return false;
-
+    // Apply selected market filter ONLY
+    if (
+      selectedMarket !== "all" &&
+      m.market.toLowerCase() !== selectedMarket.toLowerCase()
+    )
+      return false;
 
     return true;
   })
   .forEach((marketItem) => {
     const marketName = marketItem.market;
+
     marketItem.prices.forEach((price) => {
       const date = price.arrival_date;
       if (!marketData[date]) marketData[date] = { date };
@@ -197,77 +195,69 @@ priceData
     });
   });
 
+
   const priceChartData = Object.values(marketData).sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );
 
 const visibleMarkets =
   selectedMarket === "all"
-    ? Array.from(
-        new Set(
-          priceData
-            .map((m) => m.market)
-            .filter(
-              (m) => !["Kuttoor", "Pulpally", "KuttoorPulpally"].includes(m)
-            )
-        )
-      )
+    ? Array.from(new Set(priceData.map((m) => m.market)))
     : [MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket];
 
 
-  const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#8e24aa", "#cddc39", "#26a69a"];
+  const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#26a69a"];
 
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
       {/* 🟩 Rubber Price Chart */}
-     <div style={{ marginBottom: "40px" }}>
-        <h3 style={{ color: textColor, fontSize: "20px" }}>Rubber Price (Bar Chart)</h3>
+   <div style={{ width: "100%", height: 500 }}>  
+     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
+      Rubber Prizing 
+    </h3> {/* Increased height */}
+  <ResponsiveContainer width="100%" height="100%">
+    <BarChart
+      data={priceChartData}
+      margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+    >
+      <CartesianGrid stroke={gridColor} strokeDasharray="2 2" vertical horizontal />
+      <XAxis
+        dataKey="date"
+        tick={{ fontSize: 12, fill: axisColor }}
+        tickFormatter={(v) =>
+          new Date(v).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+        }
+      />
+      <YAxis tick={{ fontSize: 12, fill: axisColor }} tickFormatter={(v) => `₹${v}`} />
+      <Tooltip
+        formatter={(value, name) => [`₹${value}`, name]}
+        contentStyle={{
+          background: cardBg,
+          borderRadius: 6,
+          border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+          color: textColor,
+        }}
+        labelStyle={{ fontWeight: "bold" }}
+      />
+      <Legend wrapperStyle={{ color: textColor }} />
 
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={priceChartData}
-            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid stroke={gridColor} strokeDasharray="2 2" vertical horizontal />
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 12, fill: axisColor }}
-              tickFormatter={(v) =>
-                new Date(v).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
-              }
-            />
-            <YAxis
-              tick={{ fontSize: 12, fill: axisColor }}
-              tickFormatter={(v) => `₹${v}`}
-            />
-            <Tooltip
-              formatter={(value, name) => [`₹${value}`, name]}
-              contentStyle={{
-                background: cardBg,
-                borderRadius: 6,
-                border: `1px solid ${isDark ? "#333" : "#ccc"}`,
-                color: textColor,
-              }}
-              labelStyle={{ fontWeight: "bold" }}
-            />
-            <Legend wrapperStyle={{ color: textColor }} />
-           {visibleMarkets.map((market, idx) => {
-  const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
-  return (
-    <Bar
-      key={`${market}_bar`}
-      dataKey={`${market}_INR`}
-      name={labelName}
-      fill={marketColors[idx % marketColors.length]}
-      radius={[6, 6, 0, 0]}
-      barSize={25}
-    />
-  );
-})}
+      {visibleMarkets.map((market, idx) => {
+        const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
+        return (
+          <Bar
+            key={`${market}_bar`}
+            dataKey={`${market}_INR`}
+            name={labelName}
+            fill={marketColors[idx % marketColors.length]}
+            radius={[6, 6, 0, 0]}
+            barSize={25}
+          />
+        );
+      })}
+    </BarChart>
+  </ResponsiveContainer>
+</div>
 
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
 
 
       {/* 🟦 Intercrops + Gender */}
@@ -275,15 +265,17 @@ const visibleMarkets =
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "5px",
+          gap: "5px"
+         
         }}
       >
         {/* Intercrops Distribution */}
         <div>
-          <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
+          <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px",  marginBottom: "20px", }}>
             Intercrops Distribution
           </h3>
-          <ResponsiveContainer width="480" height={380}>
+      <ResponsiveContainer width="480" height={380}>
+
             <BarChart data={sortedIntercropData} margin={{ top: 20, right: 30, left: 20, bottom: 30 }}>
               {/* <CartesianGrid  /> */}
               <YAxis tick={{ fill: axisColor }} />
@@ -341,8 +333,8 @@ const visibleMarkets =
           </ResponsiveContainer>
         </div>
          <div>
-          <h3 style={{ color: textColor, fontSize: "20px" }}>Gender Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 style={{ color: textColor, fontSize: "20px" ,  marginTop: "20px",}}>Gender Distribution</h3>
+         <ResponsiveContainer width="480" height={380}>
             <PieChart>
               <Pie
                 data={genderData}
@@ -404,7 +396,7 @@ const visibleMarkets =
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
-    <ResponsiveContainer width="100%" height={390}>
+   <ResponsiveContainer width="480" height={380}>
       <PieChart>
         <Pie
           data={[
@@ -460,13 +452,16 @@ const visibleMarkets =
         <XAxis dataKey="range" tick={{ fontSize: 12, fill: axisColor }} />
         <YAxis tick={{ fontSize: 12, fill: axisColor }} />
         <Tooltip
-          contentStyle={{
-            background: cardBg,
-            borderRadius: 6,
-            border: `1px solid ${isDark ? "#333" : "#ccc"}`,
-            color: textColor,
-          }}
-        />
+  formatter={(value, name) => [value, name]}
+  labelFormatter={(label) => `${label} years`}
+  contentStyle={{
+    background: cardBg,
+    borderRadius: 6,
+    border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+    color: textColor,
+  }}
+/>
+
         <Legend wrapperStyle={{ color: textColor }} />
         <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
         <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
