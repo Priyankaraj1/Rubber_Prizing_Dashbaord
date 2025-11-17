@@ -404,7 +404,7 @@ const visibleMarkets =
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
-    <ResponsiveContainer width="100%" height={380}>
+    <ResponsiveContainer width="100%" height={390}>
       <PieChart>
         <Pie
           data={[
