@@ -69,11 +69,10 @@ const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
         url.searchParams.append("to_date", toDate);
         url.searchParams.append("grade", selectedGrade);
 if (selectedMarket !== "all") {
-  // Map the dashboard’s lowercase market ID to the proper API name
+
   const apiMarketName = MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket;
   url.searchParams.append("market", apiMarketName);
 }
-
 
         const res = await axios.get(url.toString());
         setPriceData(res.data?.data || []);
@@ -89,16 +88,16 @@ if (selectedMarket !== "all") {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading graphs...</p>;
   }
 
-  // If no date selected, show message instead of price chart
   if (!fromDate || !toDate) {
     return (
       <div style={{ textAlign: "center", marginTop: "60px", color: textColor }}>
         <h3>Please select a date range to view price charts.</h3>
       </div>
+     
     );
   }
 
-  // 🔸 Prepare data for charts
+  
   const genderData = [
     { name: "Male", value: breadcrumbData.total_male_workers },
     { name: "Female", value: breadcrumbData.total_female_workers },
@@ -120,7 +119,6 @@ if (selectedMarket !== "all") {
     Tubers: "#8bc34a",
     others: "#9ad14a",
   };
-
   const sortedIntercropData = INTERCROP_ORDER.map((cropName) => {
     const found = intercropData.find((d) => d.name === cropName);
     return found || { name: cropName, value: 0 };
