@@ -29,7 +29,7 @@ const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
   const [breadcrumbData, setBreadcrumbData] = useState(null);
   const [immobileData, setImmobileData] = useState(null);
   const [priceData, setPriceData] = useState([]);
-  // Market name mapping specifically for the API
+  
   const MARKET_API_MAP = {
   agartala: "Agartala",
   kochi: "Kochi",
@@ -69,25 +69,21 @@ const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
         url.searchParams.append("to_date", toDate);
         url.searchParams.append("grade", selectedGrade);
 if (selectedMarket !== "all") {
-
   const apiMarketName = MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket;
   url.searchParams.append("market", apiMarketName);
 }
-
         const res = await axios.get(url.toString());
         setPriceData(res.data?.data || []);
       } catch (error) {
         console.error("Error fetching filtered price data:", error);
       }
     };
-
     fetchPriceData();
   }, [fromDate, toDate, selectedMarket, selectedGrade]);
 
   if (!breadcrumbData || !immobileData) {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading graphs...</p>;
   }
-
   if (!fromDate || !toDate) {
     return (
       <div style={{ textAlign: "center", marginTop: "60px", color: textColor }}>
@@ -96,9 +92,9 @@ if (selectedMarket !== "all") {
      
     );
   }
-  // ---- Fill Missing Market Prices ----
+  
 function fillMissingPrices(data, markets) {
-  // Forward fill
+ 
 priceData.forEach((marketItem) => {
   const marketName = MARKET_API_MAP[marketItem.market.toLowerCase()] || marketItem.market;
 
@@ -109,8 +105,6 @@ priceData.forEach((marketItem) => {
   });
 });
 
-
-  // Backward fill
   markets.forEach((market) => {
     let nextValue = null;
     for (let i = data.length - 1; i >= 0; i--) {
@@ -125,14 +119,10 @@ priceData.forEach((marketItem) => {
 
   return data;
 }
-
- 
-  
   const genderData = [
     { name: "Male", value: breadcrumbData.total_male_workers },
     { name: "Female", value: breadcrumbData.total_female_workers },
   ];
-
   const intercropData =
     breadcrumbData.plotwise_unique_intercrops?.map((crop) => ({
       name: crop.inter_crops,
@@ -187,7 +177,6 @@ const marketData = {};
 
 priceData
   .filter((m) => {
-    // Apply selected market filter ONLY
     if (
       selectedMarket !== "all" &&
       m.market.toLowerCase() !== selectedMarket.toLowerCase()
@@ -205,27 +194,19 @@ priceData
       marketData[date][`${marketName}_INR`] = parseFloat(price.INR);
     });
   });
-
-
   let priceChartData = Object.values(marketData).sort(
   (a, b) => new Date(a.date) - new Date(b.date)
 );
-
 const visibleMarkets =
   selectedMarket === "all"
     ? Array.from(new Set(priceData.map((m) => m.market)))
     : [MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket];
-// ---- CLEAN MISSING VALUES FOR CONTINUOUS LINES ----
+
 priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
-
-
-
-
-  const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#26a69a"];
+const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#26a69a"];
 
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
-      {/* 🟩 Rubber Price Chart */}
 <div style={{ width: "100%", height: 500, marginBottom: "40px" }}>
   <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
     Rubber Pricing
@@ -252,10 +233,8 @@ priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
       <YAxis
   tick={{ fontSize: 12, fill: axisColor }}
   tickFormatter={(v) => `₹${v}`}
-  domain={[10000, 'dataMax + 2000']}   // 👈 
+  domain={[10000, 'dataMax + 2000']}   
 />
-
-
       {/* <Tooltip
         formatter={(value, name) => [`₹${value}`, name]}
         contentStyle={{
@@ -267,11 +246,8 @@ priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
         labelStyle={{ fontWeight: "bold" }}
       /> */}
       <Tooltip formatter={(v) => Number(v || 0)} />
-
-
       <Legend wrapperStyle={{ color: textColor }} />
-
-      {/* LOOP THROUGH MARKETS AND DRAW LINES */}
+     
       {visibleMarkets.map((market, idx) => {
         const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
         return (
@@ -290,9 +266,6 @@ priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
     </LineChart>
   </ResponsiveContainer>
 </div>
-
-
-
 
       {/* 🟦 Intercrops + Gender */}
       <div

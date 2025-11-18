@@ -1,9 +1,8 @@
-// App.jsx
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from "@mui/material";
-import { getTheme } from "./theme"; // import your theme config
-
+import { getTheme } from "./theme"; 
 import AuthPage from "./pages/AuthPage";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -13,7 +12,6 @@ import Officer from "./pages/Officer";
 import Enquiry from "./pages/Enquiry";
 import AdvisoryType from "./pages/AdvisoryType";
 import AddAdvisory from "./pages/AddAdvisory";
-
 export default function App() {
   const [mode, setMode] = useState(localStorage.getItem("themeMode") || "light");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
