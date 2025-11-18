@@ -212,9 +212,7 @@ const [toDate, setToDate] = useState(dayjs());
             </Typography>
           </Typography>
 
-          {/* Filters */}
-       {/* Filters */}
-{/* FILTERS SECTION (Collapsible) */}
+          
 {showFilters && (
   <Paper
     elevation={2}
@@ -227,34 +225,47 @@ const [toDate, setToDate] = useState(dayjs());
     }}
   >
     <Grid container spacing={2}>
-      {/* From Date */}
-      <Grid item xs={12} sm={6} md={3}>
-        <DatePicker
-          label="From Date"
-          value={fromDate}
-          onChange={(newValue) => setFromDate(newValue)}
-          renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-        />
-      </Grid>
-
-      {/* To Date */}
-      <Grid item xs={12} sm={6} md={3}>
-        <DatePicker
-          label="To Date"
-          value={toDate}
-          onChange={(newValue) => setToDate(newValue)}
-          renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-        />
-      </Grid>
+      {/* Common style for all inputs */}
+      {[
+        {
+          type: "date",
+          label: "From Date",
+          value: fromDate,
+          onChange: (newValue) => setFromDate(newValue),
+        },
+        {
+          type: "date",
+          label: "To Date",
+          value: toDate,
+          onChange: (newValue) => setToDate(newValue),
+        },
+      ].map((item, idx) => (
+        <Grid item xs={12} sm={6} md={3} key={idx}>
+          <DatePicker
+            label={item.label}
+            value={item.value}
+            onChange={item.onChange}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                size="small"
+                sx={{ height: "56px" }} // fix height for uniformity
+              />
+            )}
+          />
+        </Grid>
+      ))}
 
       {/* Market Dropdown */}
       <Grid item xs={12} sm={6} md={3}>
-        <FormControl fullWidth size="small">
+        <FormControl fullWidth size="small" sx={{ height: "56px" }}>
           <InputLabel>Market</InputLabel>
           <Select
             value={selectedMarket}
             label="Market"
             onChange={(e) => setSelectedMarket(e.target.value)}
+            sx={{ height: "100%" }} // match parent height
           >
             {MARKETS.map((market) => (
               <MenuItem key={market.id} value={market.id}>
@@ -264,34 +275,42 @@ const [toDate, setToDate] = useState(dayjs());
           </Select>
         </FormControl>
       </Grid>
+
       {/* Grade Dropdown */}
-<Grid item xs={12} sm={6} md={3}>
-  <FormControl fullWidth size="small">
-    <InputLabel>Grade</InputLabel>
-    <Select
-      value={selectedGrade}
-      label="Grade"
-      onChange={(e) => setSelectedGrade(e.target.value)}
-    >
-      <MenuItem value="RSS4">RSS4</MenuItem>
-      <MenuItem value="RSS5">RSS5</MenuItem>
-      <MenuItem value="Latex60%">Latex60%</MenuItem>
-      <MenuItem value="ISNR20">ISNR20</MenuItem>
-    </Select>
-  </FormControl>
-</Grid>
+      <Grid item xs={12} sm={6} md={3}>
+        <FormControl fullWidth size="small" sx={{ height: "56px" }}>
+          <InputLabel>Grade</InputLabel>
+          <Select
+            value={selectedGrade}
+            label="Grade"
+            onChange={(e) => setSelectedGrade(e.target.value)}
+            sx={{ height: "100%" }}
+          >
+            <MenuItem value="RSS4">RSS4</MenuItem>
+            <MenuItem value="RSS5">RSS5</MenuItem>
+            <MenuItem value="Latex60%">Latex60%</MenuItem>
+            <MenuItem value="ISNR20">ISNR20</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+
+      {/* Apply Button */}
       <Grid item xs={12} sm={6} md={3}>
         <Button
           variant="contained"
           fullWidth
-          sx={{ height: "100%", bgcolor: "#4caf50", "&:hover": { bgcolor: "#388e3c" } }}
+          sx={{
+            height: "56px", // same as inputs
+            bgcolor: "#4caf50",
+            "&:hover": { bgcolor: "#388e3c" },
+          }}
           onClick={() => {
             console.log("Filter applied:", {
               from: fromDate.format("YYYY-MM-DD"),
               to: toDate.format("YYYY-MM-DD"),
               market: selectedMarket,
+              grade: selectedGrade,
             });
-            // 🔜 You can call your price API here using from/to when integrated
           }}
         >
           APPLY FILTER
@@ -302,10 +321,10 @@ const [toDate, setToDate] = useState(dayjs());
 )}
 
 
+
         </Box>
 
-        {/* Loading State */}
-     {/* ────────────────────── PRICE DISPLAY (MOBILE-RESPONSIVE) ────────────────────── */}
+       
 {loadingPrices ? (
   <Box sx={{ display: "flex", justifyContent: "center", my: 6 }}>
     <CircularProgress />

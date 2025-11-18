@@ -96,7 +96,37 @@ if (selectedMarket !== "all") {
      
     );
   }
+  // ---- Fill Missing Market Prices ----
+function fillMissingPrices(data, markets) {
+  // Forward fill
+priceData.forEach((marketItem) => {
+  const marketName = MARKET_API_MAP[marketItem.market.toLowerCase()] || marketItem.market;
 
+  marketItem.prices.forEach((price) => {
+    const date = price.arrival_date;
+    if (!marketData[date]) marketData[date] = { date };
+    marketData[date][`${marketName}_INR`] = parseFloat(price.INR);
+  });
+});
+
+
+  // Backward fill
+  markets.forEach((market) => {
+    let nextValue = null;
+    for (let i = data.length - 1; i >= 0; i--) {
+      const key = `${market}_INR`;
+      if (data[i][key] != null) {
+        nextValue = data[i][key];
+      } else if (nextValue != null) {
+        data[i][key] = nextValue;
+      }
+    }
+  });
+
+  return data;
+}
+
+ 
   
   const genderData = [
     { name: "Male", value: breadcrumbData.total_male_workers },
@@ -177,14 +207,18 @@ priceData
   });
 
 
-  const priceChartData = Object.values(marketData).sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
-  );
+  let priceChartData = Object.values(marketData).sort(
+  (a, b) => new Date(a.date) - new Date(b.date)
+);
 
 const visibleMarkets =
   selectedMarket === "all"
     ? Array.from(new Set(priceData.map((m) => m.market)))
     : [MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket];
+// ---- CLEAN MISSING VALUES FOR CONTINUOUS LINES ----
+priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
+
+
 
 
   const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#26a69a"];
@@ -192,26 +226,37 @@ const visibleMarkets =
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
       {/* 🟩 Rubber Price Chart */}
-  <div style={{ width: "100%", height: 500, marginBottom: "40px" }}>
- 
-     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
-      Rubber Prizing 
-    </h3> {/* Increased height */}
+<div style={{ width: "100%", height: 500, marginBottom: "40px" }}>
+  <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
+    Rubber Pricing
+  </h3>
+
   <ResponsiveContainer width="100%" height="100%">
-    <BarChart
+    <LineChart
       data={priceChartData}
       margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
     >
-      <CartesianGrid stroke={gridColor} strokeDasharray="2 2" vertical horizontal />
+      <CartesianGrid stroke={gridColor} strokeDasharray="2 2" />
+
       <XAxis
         dataKey="date"
         tick={{ fontSize: 12, fill: axisColor }}
         tickFormatter={(v) =>
-          new Date(v).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+          new Date(v).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+          })
         }
       />
-      <YAxis tick={{ fontSize: 12, fill: axisColor }} tickFormatter={(v) => `₹${v}`} />
-      <Tooltip
+
+      <YAxis
+  tick={{ fontSize: 12, fill: axisColor }}
+  tickFormatter={(v) => `₹${v}`}
+  domain={[10000, 'dataMax + 2000']}   // 👈 
+/>
+
+
+      {/* <Tooltip
         formatter={(value, name) => [`₹${value}`, name]}
         contentStyle={{
           background: cardBg,
@@ -220,25 +265,32 @@ const visibleMarkets =
           color: textColor,
         }}
         labelStyle={{ fontWeight: "bold" }}
-      />
+      /> */}
+      <Tooltip formatter={(v) => Number(v || 0)} />
+
+
       <Legend wrapperStyle={{ color: textColor }} />
 
+      {/* LOOP THROUGH MARKETS AND DRAW LINES */}
       {visibleMarkets.map((market, idx) => {
         const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
         return (
-          <Bar
-            key={`${market}_bar`}
+          <Line
+            key={`${market}_line`}
+            type="monotone"
             dataKey={`${market}_INR`}
             name={labelName}
-            fill={marketColors[idx % marketColors.length]}
-            radius={[6, 6, 0, 0]}
-            barSize={25}
+            stroke={marketColors[idx % marketColors.length]}
+            strokeWidth={3}
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
           />
         );
       })}
-    </BarChart>
+    </LineChart>
   </ResponsiveContainer>
 </div>
+
 
 
 
@@ -414,41 +466,68 @@ const visibleMarkets =
     </ResponsiveContainer>
   </div>
 
-  <div>
-    <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
-      Mature vs Immature Trees
-    </h3>
-    <ResponsiveContainer width="100%" height={380}>
-      <BarChart
-        data={Object.keys(breadcrumbData.mature_tree_distribution || {}).map(
-          (range) => ({
-            range,
-            Mature: breadcrumbData.mature_tree_distribution[range] || 0,
-            Immature: breadcrumbData.immature_tree_distribution[range] || 0,
-          })
-        )}
-        margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-        <XAxis dataKey="range" tick={{ fontSize: 12, fill: axisColor }} />
-        <YAxis tick={{ fontSize: 12, fill: axisColor }} />
-        <Tooltip
-  formatter={(value, name) => [value, name]}
-  labelFormatter={(label) => `${label} years`}
-  contentStyle={{
-    background: cardBg,
-    borderRadius: 6,
-    border: `1px solid ${isDark ? "#333" : "#ccc"}`,
-    color: textColor,
-  }}
-/>
+ <div>
+  <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
+    Mature vs Immature Trees
+  </h3>
 
-        <Legend wrapperStyle={{ color: textColor }} />
-        <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
-        <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
+  <ResponsiveContainer width="100%" height={380}>
+    <BarChart
+      data={Object.keys(breadcrumbData.mature_tree_distribution || {}).map(
+        (range) => ({
+          range,
+          Mature: breadcrumbData.mature_tree_distribution[range] || 0,
+          Immature: breadcrumbData.immature_tree_distribution[range] || 0,
+        })
+      )}
+      margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+
+      {/* X Axis: Rubber Tree Count Bins */}
+      <XAxis
+        dataKey="range"
+        tick={{ fontSize: 12, fill: axisColor }}
+        label={{
+          value: "Rubber Tree Count Range",
+          position: "insideBottom",
+          offset: -5,
+          fill: axisColor,
+          fontSize: 12,
+        }}
+      />
+
+      {/* Y Axis: Farmer Count */}
+      <YAxis
+        tick={{ fontSize: 12, fill: axisColor }}
+        label={{
+          value: "Farmer Count",
+          angle: -90,
+          position: "insideLeft",
+          fill: axisColor,
+          fontSize: 12,
+        }}
+      />
+
+      <Tooltip
+        formatter={(value, name) => [value, name]} // no currency, no "years"
+        labelFormatter={(label) => `Range: ${label}`} // removed "years"
+        contentStyle={{
+          background: cardBg,
+          borderRadius: 6,
+          border: `1px solid ${isDark ? "#333" : "#ccc"}`,
+          color: textColor,
+        }}
+      />
+
+      <Legend wrapperStyle={{ color: textColor }} />
+
+      <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
+      <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+
 </div>
           
     </div>
