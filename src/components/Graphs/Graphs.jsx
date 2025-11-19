@@ -233,7 +233,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
       <YAxis
   tick={{ fontSize: 12, fill: axisColor }}
   tickFormatter={(v) => `₹${v}`}
-  domain={[10000, 'dataMax + 2000']}   
+  domain={[16000, 'dataMax + 1000']}   
 />
       {/* <Tooltip
         formatter={(value, name) => [`₹${value}`, name]}
@@ -245,22 +245,33 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         }}
         labelStyle={{ fontWeight: "bold" }}
       /> */}
-      <Tooltip formatter={(v) => Number(v || 0)} />
+    <Tooltip
+  formatter={(v, name) => {
+    if (name.toLowerCase().includes("kuttoor")) return []; // ❗ hide kuttoor tooltip
+    return [`₹${v}`, name];
+  }}
+/>
+
       <Legend wrapperStyle={{ color: textColor }} />
      
       {visibleMarkets.map((market, idx) => {
         const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
+          const hideLegend = market.toLowerCase() === "kuttoor";
         return (
-          <Line
-            key={`${market}_line`}
-            type="monotone"
-            dataKey={`${market}_INR`}
-            name={labelName}
-            stroke={marketColors[idx % marketColors.length]}
-            strokeWidth={3}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
+        
+
+<Line
+  key={`${market}_line`}
+  type="monotone"
+  dataKey={`${market}_INR`}
+  name={hideLegend ? "" : labelName}   // ❗ removes from legend
+  stroke={marketColors[idx % marketColors.length]}
+  strokeWidth={3}
+  dot={{ r: 4 }}
+  activeDot={{ r: 6 }}
+  hide={false}
+/>
+
         );
       })}
     </LineChart>
@@ -383,9 +394,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   }}
 >
    
-
- 
-  
   
 </div>
 
@@ -483,8 +491,8 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
       />
 
       <Tooltip
-        formatter={(value, name) => [value, name]} // no currency, no "years"
-        labelFormatter={(label) => `Range: ${label}`} // removed "years"
+        formatter={(value, name) => [value, name]} 
+        labelFormatter={(label) => `Range: ${label}`} 
         contentStyle={{
           background: cardBg,
           borderRadius: 6,
@@ -493,7 +501,8 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         }}
       />
 
-      <Legend wrapperStyle={{ color: textColor }} />
+    <Legend wrapperStyle={{ color: textColor, marginTop: "20px" }} />
+
 
       <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
       <Bar dataKey="Mature" fill="#26a69a" barSize={25} />

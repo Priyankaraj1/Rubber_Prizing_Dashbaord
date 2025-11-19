@@ -16,13 +16,11 @@ export default function App() {
   const [mode, setMode] = useState(localStorage.getItem("themeMode") || "light");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token && token !== "undefined" && token !== "null");
     setCheckingAuth(false);
   }, []);
-
   const toggleColorMode = () => {
     setMode((prevMode) => {
       const nextMode = prevMode === "light" ? "dark" : "light";
@@ -30,19 +28,15 @@ export default function App() {
       return nextMode;
     });
   };
-
   const theme = useMemo(() => getTheme(mode), [mode]);
-
   const handleLogin = () => setIsAuthenticated(true);
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
     setIsAuthenticated(false);
   };
-
   const PrivateRoute = ({ children }) =>
     isAuthenticated ? children : <Navigate to="/login" replace />;
-
   if (checkingAuth) {
     return (
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -50,14 +44,12 @@ export default function App() {
       </Box>
     );
   }
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AuthPage onLogin={handleLogin} />} />
-
         <Route
           element={
             <PrivateRoute>
@@ -72,7 +64,6 @@ export default function App() {
           <Route path="/Enquiries" element={<Enquiry />} />
           <Route path="/AdvisoryType" element={<AdvisoryType />} />
           <Route path="/add-advisory" element={<AddAdvisory />} />
-
         </Route>
       </Routes>
     </ThemeProvider>
