@@ -6,9 +6,11 @@ import {
   Button,
   Typography,
   InputAdornment,
+  useMediaQuery
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LockIcon from "@mui/icons-material/Lock";
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
 export default function AuthPage({ onLogin }) {
@@ -17,6 +19,10 @@ export default function AuthPage({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleLogin = async () => {
     if (!phone || !password) {
@@ -67,31 +73,41 @@ export default function AuthPage({ onLogin }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        p: 2,
+        p: { xs: 1, sm: 2 },
+        position: "relative",
       }}
     >
-       <Box sx={{ position: "absolute", top: 20, left: 20 }}>
-    <img
-      src="/solidaridad_logo_dark.png"
-      alt="Logo"
-      style={{ width: "140px", height: "auto" }}
-    />
-  </Box>
-      {/* CARD WRAPPER */}
+      {/* LOGO */}
+      <Box sx={{ position: "absolute", top: 20, left: 20 }}>
+        <img
+          src="/solidaridad_logo_dark.png"
+          alt="Logo"
+          style={{ width: isMobile ? "110px" : "140px" }}
+        />
+      </Box>
+
+      {/* Card */}
       <Box
         sx={{
-          width: { xs: "95%", sm: "80%", md: "60%" },
+          width: "100%",
           maxWidth: "900px",
           background: "white",
           borderRadius: "16px",
           boxShadow: "0 4px 18px rgba(0,0,0,0.15)",
           display: "flex",
+          flexDirection: isTablet ? "column" : "row",
           overflow: "hidden",
         }}
       >
         {/* LEFT SIDE - FORM */}
-        <Box sx={{ width: "50%", p: 4, bgcolor: "#FAFBEF" }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 ,color:"black" }}>
+        <Box
+          sx={{
+            width: isTablet ? "100%" : "50%",
+            p: { xs: 3, sm: 4 },
+            bgcolor: "#FAFBEF",
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: "black" }}>
             Login
           </Typography>
 
@@ -99,21 +115,20 @@ export default function AuthPage({ onLogin }) {
             fullWidth
             placeholder="Phone Number"
             sx={{
-  mb: 2,
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "8px",
-    bgcolor: "#EEF4FF",
-    color: "black",                        // text black
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "black",                        // placeholder black
-    opacity: 1,
-  },
-  "& .MuiSvgIcon-root": {
-    color: "black",                        // icon black
-  }
-}}
-
+              mb: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
+                bgcolor: "#EEF4FF",
+                color: "black",
+              },
+              "& .MuiInputBase-input::placeholder": {
+                color: "black",
+                opacity: 1,
+              },
+              "& .MuiSvgIcon-root": {
+                color: "black",
+              },
+            }}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             InputProps={{
@@ -123,7 +138,6 @@ export default function AuthPage({ onLogin }) {
                 </InputAdornment>
               ),
             }}
-           
           />
 
           <TextField
@@ -132,6 +146,21 @@ export default function AuthPage({ onLogin }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              mb: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
+                bgcolor: "#EEF4FF",
+                color: "black",
+              },
+              "& .MuiInputBase-input::placeholder": {
+                color: "black",
+                opacity: 1,
+              },
+              "& .MuiSvgIcon-root": {
+                color: "black",
+              },
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -139,22 +168,6 @@ export default function AuthPage({ onLogin }) {
                 </InputAdornment>
               ),
             }}
-           sx={{
-  mb: 2,
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "8px",
-    bgcolor: "#EEF4FF",
-    color: "black",                        // text black
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "black",                        // placeholder black
-    opacity: 1,
-  },
-  "& .MuiSvgIcon-root": {
-    color: "black",                        // icon black
-  }
-}}
-
           />
 
           {error && (
@@ -164,7 +177,13 @@ export default function AuthPage({ onLogin }) {
           )}
 
           <Typography
-            sx={{ fontSize: "14px", mt: 1, mb: 3, cursor: "pointer",color:"black"  }}
+            sx={{
+              fontSize: "14px",
+              mt: 1,
+              mb: 3,
+              cursor: "pointer",
+              color: "black",
+            }}
           >
             Forgot password?
           </Typography>
@@ -187,14 +206,17 @@ export default function AuthPage({ onLogin }) {
         </Box>
 
         {/* RIGHT SIDE IMAGE */}
-        <Box
-          sx={{
-            width: "50%",
-            backgroundImage: "url('/t2.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        ></Box>
+        {!isMobile && (
+          <Box
+            sx={{
+              width: isTablet ? "100%" : "50%",
+              height: isTablet ? "250px" : "auto",
+              backgroundImage: "url('/t2.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        )}
       </Box>
     </Box>
   );
