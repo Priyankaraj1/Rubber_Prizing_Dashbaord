@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
 
 const TriangleBar = (props) => {
   const { fill, x, y, width, height } = props;
@@ -21,6 +22,7 @@ const TriangleBar = (props) => {
 
 const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width:600px)");
   const isDark = theme.palette.mode === "dark";
   const axisColor = isDark ? "#E0E0E0" : "#333";
   const textColor = isDark ? "#FFFFFF" : "#000000";
@@ -34,7 +36,7 @@ const Graphs = ({ fromDate, toDate, selectedMarket, selectedGrade }) => {
   agartala: "Agartala",
   kochi: "Kochi",
   kottayam: "Kottayam",
-  kuttoor: "Kuttoor",
+  Kuttoor: "Kuttoor",
   pulpally: "Pulpally",
 };
 
@@ -212,7 +214,8 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     Rubber Pricing
   </h3>
 
-  <ResponsiveContainer width="100%" height="100%">
+  <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}
+>
     <LineChart
       data={priceChartData}
       margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
@@ -253,46 +256,53 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
 />
 
       <Legend wrapperStyle={{ color: textColor }} />
-     
-      {visibleMarkets.map((market, idx) => {
-        const labelName = MARKET_API_MAP[market.toLowerCase()] || market;
-          const hideLegend = market.toLowerCase() === "kuttoor";
-        return (
-        
+    {visibleMarkets.map((market, idx) => {
+  const normalized = market.toLowerCase();
 
-<Line
-  key={`${market}_line`}
-  type="monotone"
-  dataKey={`${market}_INR`}
-  name={hideLegend ? "" : labelName}   // ❗ removes from legend
-  stroke={marketColors[idx % marketColors.length]}
-  strokeWidth={3}
-  dot={{ r: 4 }}
-  activeDot={{ r: 6 }}
-  hide={false}
-/>
+  const isKuttoor =
+    normalized.includes("kuttoor") ||
+    normalized.includes("khootor") ||
+    normalized.includes("khuttoor");
 
-        );
-      })}
+  const labelName = MARKET_API_MAP[normalized] || market;
+
+  return (
+    <Line
+      key={`${market}_line`}
+      type="monotone"
+      dataKey={`${market}_INR`}
+      name={isKuttoor ? "" : labelName}    // hide label
+      legendType={isKuttoor ? "none" : "line"}  // 🔥 hide from legend completely
+      stroke={marketColors[idx % marketColors.length]}
+      strokeWidth={3}
+      dot={{ r: 4 }}
+      activeDot={{ r: 6 }}
+    />
+  );
+})}
+
     </LineChart>
   </ResponsiveContainer>
 </div>
 
       {/* 🟦 Intercrops + Gender */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "5px"
-         
-        }}
-      >
+     <div
+  style={{
+    display: "grid",
+   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+
+    gap: "20px",
+  }}
+>
+
         {/* Intercrops Distribution */}
         <div>
           <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px",  marginBottom: "20px", }}>
             Intercrops Distribution
           </h3>
-      <ResponsiveContainer width="480" height={380}>
+    <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
+
+
 
             <BarChart data={sortedIntercropData} margin={{ top: 20, right: 30, left: 20, bottom: 30 }}>
               {/* <CartesianGrid  /> */}
@@ -352,7 +362,9 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         </div>
          <div>
           <h3 style={{ color: textColor, fontSize: "20px" ,  marginTop: "20px",}}>Gender Distribution</h3>
-         <ResponsiveContainer width="480" height={380}>
+    <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
+
+
             <PieChart>
               <Pie
                 data={genderData}
@@ -411,7 +423,9 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
-   <ResponsiveContainer width="380" height={380}>
+  <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
+
+
       <PieChart>
         <Pie
           data={[
@@ -452,7 +466,8 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     Mature vs Immature Trees
   </h3>
 
-  <ResponsiveContainer width="100%" height={380}>
+  <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
+
     <BarChart
       data={Object.keys(breadcrumbData.mature_tree_distribution || {}).map(
         (range) => ({
