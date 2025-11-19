@@ -44,31 +44,24 @@ export default function AddAdvisory() {
     if (imgRef.current.files[0]) formData.append("image_file", imgRef.current.files[0]);
     if (videoRef.current.files[0]) formData.append("video_file", videoRef.current.files[0]);
     if (audioRef.current.files[0]) formData.append("audio_file", audioRef.current.files[0]);
-
     try {
       const res = await axios.post(`${API_BASE}/addAdvisory`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("Advisory Added Successfully!");
-
-      navigate("/advisory"); // redirect to listing page
+      });      alert("Advisory Added Successfully!");
+      navigate("/advisory"); 
     } catch (err) {
       console.error(err);
       alert("Failed to add advisory.");
     }
   };
-
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 4 }}>
       <Paper sx={{ p: 4, borderRadius: 3 }}>
         <Typography variant="h5" fontWeight="bold" mb={3}>
           Add Advisory
         </Typography>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box sx={{ display: "grid", gap: 2 }}>
-
             <TextField
               select
               label="Advisory Type *"
@@ -82,14 +75,12 @@ export default function AddAdvisory() {
                 </MenuItem>
               ))}
             </TextField>
-
             <TextField
               label="Title *"
               {...register("title", { required: "Title is required" })}
               error={!!errors.title}
               helperText={errors.title?.message}
             />
-
             <TextField
               label="Description *"
               multiline
@@ -98,7 +89,6 @@ export default function AddAdvisory() {
               error={!!errors.description}
               helperText={errors.description?.message}
             />
-
             <Typography variant="subtitle1" fontWeight={600} mt={1}>
               Media Files (Optional)
             </Typography>
