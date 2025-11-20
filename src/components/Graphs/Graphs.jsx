@@ -491,7 +491,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
           fontSize: 12,
         }}
       />
-
       <YAxis
         tick={{ fontSize: 12, fill: axisColor }}
         label={{
