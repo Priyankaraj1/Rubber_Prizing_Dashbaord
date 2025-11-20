@@ -480,7 +480,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     >
       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
 
-      {/* X Axis: Rubber Tree Count Bins */}
       <XAxis
         dataKey="range"
         tick={{ fontSize: 12, fill: axisColor }}
@@ -493,7 +492,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         }}
       />
 
-      {/* Y Axis: Farmer Count */}
       <YAxis
         tick={{ fontSize: 12, fill: axisColor }}
         label={{
