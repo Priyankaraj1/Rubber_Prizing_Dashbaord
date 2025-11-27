@@ -19,17 +19,14 @@ export default function AuthPage({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-
   const handleLogin = async () => {
     if (!phone || !password) {
       setError("Phone number and password are required!");
       return;
     }
-
     setError("");
     setLoading(true);
 
@@ -42,15 +39,11 @@ export default function AuthPage({ onLogin }) {
           body: JSON.stringify({ phone, password }),
         }
       );
-
       const data = await response.json();
-
       if (response.ok && data.success) {
         const userData = data.data;
-
         localStorage.setItem("token", userData.token);
         localStorage.setItem("name", userData.name);
-
         onLogin?.();
         navigate("/Dashboard");
       } else {
@@ -85,7 +78,6 @@ export default function AuthPage({ onLogin }) {
           style={{ width: isMobile ? "110px" : "140px" }}
         />
       </Box>
-
       {/* Card */}
       <Box
         sx={{
@@ -110,7 +102,6 @@ export default function AuthPage({ onLogin }) {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: "black" }}>
             Login
           </Typography>
-
           <TextField
             fullWidth
             placeholder="Phone Number"
@@ -139,7 +130,6 @@ export default function AuthPage({ onLogin }) {
               ),
             }}
           />
-
           <TextField
             fullWidth
             placeholder="Password"
@@ -169,13 +159,11 @@ export default function AuthPage({ onLogin }) {
               ),
             }}
           />
-
           {error && (
             <Typography color="error" sx={{ mt: 1 }}>
               {error}
             </Typography>
           )}
-
           <Typography
             sx={{
               fontSize: "14px",
@@ -205,7 +193,7 @@ export default function AuthPage({ onLogin }) {
           </Button>
         </Box>
 
-        {/* RIGHT SIDE IMAGE */}
+        
         {!isMobile && (
           <Box
             sx={{
