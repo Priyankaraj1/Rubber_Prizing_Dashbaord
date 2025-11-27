@@ -209,13 +209,11 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
 
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
-<div style={{ width: "100%", height: 500, marginBottom: "40px" }}>
-  <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
-    Rubber Pricing
-  </h3>
+<div className="graph-card">
+  <h3 className="graph-title">Rubber Pricing</h3>
+  <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
 
-  <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}
->
+  
     <LineChart
       data={priceChartData}
       margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
@@ -479,7 +477,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
       margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-
       <XAxis
         dataKey="range"
         tick={{ fontSize: 12, fill: axisColor }}
@@ -501,7 +498,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
           fontSize: 12,
         }}
       />
-
       <Tooltip
         formatter={(value, name) => [value, name]} 
         labelFormatter={(label) => `Range: ${label}`} 
@@ -512,20 +508,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
           color: textColor,
         }}
       />
-
     <Legend wrapperStyle={{ color: textColor, marginTop: "20px" }} />
-
-
-      <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
-      <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
+    <Bar dataKey="Immature" fill="#8bc34a" barSize={25} />
+    <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
     </BarChart>
   </ResponsiveContainer>
 </div>
-
-</div>
-          
+</div>   
     </div>
   );
 };
-
 export default Graphs;
