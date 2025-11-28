@@ -210,7 +210,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
 <div className="graph-card">
-  <h3 className="graph-title">Rubber Pricing</h3>
+  <h3 className="graph-title ">Rubber Pricing</h3>
   <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
 
   
@@ -358,7 +358,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
             </BarChart>
           </ResponsiveContainer>
         </div>
-         <div>
+          <div
+  style={{
+    display: "grid",
+   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+
+    gap: "20px",
+  }}
+>
           <h3 style={{ color: textColor, fontSize: "20px" ,  marginTop: "20px",}}>Gender Distribution</h3>
     <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
@@ -408,12 +415,12 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
 </div>
 
 {/* 🟢 Agricultural Area Distribution + Tree Histogram */}
-<div
+ <div
   style={{
     display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "30px",
-    marginTop: "40px",
+   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+
+    gap: "20px",
   }}
 >
   {/* 🥧 Agricultural Area Distribution */}
@@ -459,7 +466,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     </ResponsiveContainer>
   </div>
 
- <div>
+ <div
+  style={{
+    display: "grid",
+   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+
+    gap: "20px",
+  }}
+>
   <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
     Mature vs Immature Trees
   </h3>
@@ -477,17 +491,19 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
       margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-      <XAxis
-        dataKey="range"
-        tick={{ fontSize: 12, fill: axisColor }}
-        label={{
-          value: "Rubber Tree Count Range",
-          position: "insideBottom",
-          offset: -5,
-          fill: axisColor,
-          fontSize: 12,
-        }}
-      />
+     <XAxis
+  dataKey="range"
+  tick={{ fontSize: 12, fill: axisColor }}
+  label={{
+    value: "Rubber Tree Count Range",
+    position: "insideBottom",
+    offset: -5,
+    fill: axisColor,
+    fontSize: 12,
+     // 👉 shift label to the right
+  }}
+/>
+
       <YAxis
         tick={{ fontSize: 12, fill: axisColor }}
         label={{

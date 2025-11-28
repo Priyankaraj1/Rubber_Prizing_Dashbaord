@@ -23,7 +23,7 @@ const menuItems = [
 function Sidebar({ mobileOpen, onClose }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const drawer = (
     <>
       <Box className="sidebar-toolbar" sx={{ p: 3, mb: 1 }}>
@@ -97,7 +97,7 @@ function Sidebar({ mobileOpen, onClose }) {
           keepMounted: true, 
         }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
@@ -110,25 +110,26 @@ function Sidebar({ mobileOpen, onClose }) {
       >
         {drawer}
       </Drawer>
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", sm: "block" },
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            bgcolor: isDark ? "#1a1a1a" : "#ffffff",
-            color: theme.palette.text.primary,
-            borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-            boxShadow: isDark ? '0 4px 12px 0 rgba(0,0,0,0.3)' : '0 4px 12px 0 rgba(0,0,0,0.05)'
-          },
-        }}
-        className="sidebar-root"
-      >
-        {drawer}
-      </Drawer>
+    <Drawer
+  variant="permanent"
+  sx={{
+    display: { xs: "none", md: "block" },   // FIXED
+    width: drawerWidth,
+    flexShrink: 0,
+    "& .MuiDrawer-paper": {
+      width: drawerWidth,
+      boxSizing: "border-box",
+      bgcolor: isDark ? "#1a1a1a" : "#ffffff",
+      color: theme.palette.text.primary,
+      borderRight: `1px solid ${
+        isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+      }`,
+    },
+  }}
+>
+  {drawer}
+</Drawer>
+
     </Box>
   );
 }

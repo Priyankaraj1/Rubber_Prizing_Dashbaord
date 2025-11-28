@@ -1,18 +1,9 @@
-// src/pages/AuthPage.jsx
 import React, { useState } from "react";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  useMediaQuery
-} from "@mui/material";
+import {Box,TextField,Button,Typography,InputAdornment,useMediaQuery} from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LockIcon from "@mui/icons-material/Lock";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-
 export default function AuthPage({ onLogin }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +20,6 @@ export default function AuthPage({ onLogin }) {
     }
     setError("");
     setLoading(true);
-
     try {
       const response = await fetch(
         "https://rubber-backend.solidaridadasia.com/api/webLogin",
@@ -55,7 +45,6 @@ export default function AuthPage({ onLogin }) {
       setLoading(false);
     }
   };
-
   return (
     <Box
       sx={{
@@ -70,7 +59,6 @@ export default function AuthPage({ onLogin }) {
         position: "relative",
       }}
     >
-      {/* LOGO */}
       <Box sx={{ position: "absolute", top: 20, left: 20 }}>
         <img
           src="/solidaridad_logo_dark.png"
@@ -78,7 +66,6 @@ export default function AuthPage({ onLogin }) {
           style={{ width: isMobile ? "110px" : "140px" }}
         />
       </Box>
-      {/* Card */}
       <Box
         sx={{
           width: "100%",
@@ -91,7 +78,6 @@ export default function AuthPage({ onLogin }) {
           overflow: "hidden",
         }}
       >
-        {/* LEFT SIDE - FORM */}
         <Box
           sx={{
             width: isTablet ? "100%" : "50%",

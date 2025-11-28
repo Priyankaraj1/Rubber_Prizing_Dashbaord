@@ -10,7 +10,7 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 const drawerWidth = 240;
 function Topbar({ onMenuClick, toggleColorMode }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
@@ -34,8 +34,9 @@ function Topbar({ onMenuClick, toggleColorMode }) {
             ? "rgba(255,255,255,0.05)"
             : "rgba(0,0,0,0.05)"
         }`,
-        width: { xs: "100%", sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { xs: 0, sm: `${drawerWidth}px` },
+      width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
+ml: { xs: 0, md: `${drawerWidth}px` },
+
         backdropFilter: "blur(6px)",
         WebkitBackdropFilter: "blur(6px)",
       }}
