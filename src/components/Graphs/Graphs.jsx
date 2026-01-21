@@ -211,6 +211,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <div style={{ padding: "0 40px", color: textColor }}>
 <div className="graph-card">
   <h3 className="graph-title ">Rubber Pricing</h3>
+  <div
+  style={{
+    background: "rgba(0,0,0,0.02)",
+    borderRadius: "14px",
+    padding: "12px",
+    border: "1px solid rgba(0,0,0,0.06)",
+  }}
+>
   <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
 
   
@@ -281,6 +289,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
 
     </LineChart>
   </ResponsiveContainer>
+  </div>
 </div>
 
       {/* 🟦 Intercrops + Gender */}
@@ -298,6 +307,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
           <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px",  marginBottom: "20px", }}>
             Intercrops Distribution
           </h3>
+          <div
+  style={{
+    background: "rgba(0,0,0,0.02)",
+    borderRadius: "14px",
+    padding: "12px",
+    border: "1px solid rgba(0,0,0,0.06)",
+  }}
+>
     <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -358,6 +375,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
             </BarChart>
           </ResponsiveContainer>
         </div>
+        </div>
           <div
   style={{
     display: "grid",
@@ -367,6 +385,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   }}
 >
           <h3 style={{ color: textColor, fontSize: "20px" ,  marginTop: "20px",}}>Gender Distribution</h3>
+          <div
+  style={{
+    background: "rgba(0,0,0,0.02)",
+    borderRadius: "14px",
+    padding: "12px",
+    border: "1px solid rgba(0,0,0,0.06)",
+  }}
+>
     <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -395,6 +421,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
               <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: textColor }} />
             </PieChart>
           </ResponsiveContainer>
+        </div>
         </div>
         
 
@@ -428,6 +455,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
+    <div
+  style={{
+    background: "rgba(0,0,0,0.02)",
+    borderRadius: "14px",
+    padding: "12px",
+    border: "1px solid rgba(0,0,0,0.06)",
+  }}
+>
   <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -464,7 +499,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         />
       </PieChart>
     </ResponsiveContainer>
-  </div>
+  </div></div>
 
  <div
   style={{
@@ -477,7 +512,14 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
     Mature vs Immature Trees
   </h3>
-
+ <div
+  style={{
+    background: "rgba(0,0,0,0.02)",
+    borderRadius: "14px",
+    padding: "12px",
+    border: "1px solid rgba(0,0,0,0.06)",
+  }}
+>
   <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
     <BarChart
@@ -529,6 +571,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
     </BarChart>
   </ResponsiveContainer>
+  </div>
 </div>
 </div>   
     </div>

@@ -171,6 +171,28 @@ const [toDate, setToDate] = useState(dayjs());
       });
     }
   };
+const filterInputSx = {
+  bgcolor: "#fff",
+  borderRadius: 1,
+  "& .MuiInputBase-input": {
+    color: "#000", // text color
+  },
+  "& .MuiInputLabel-root": {
+    color: "#555", // label
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#2e7d32", // green when focused
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#ccc",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#2e7d32",
+  },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#2e7d32",
+  },
+};
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -221,7 +243,9 @@ const [toDate, setToDate] = useState(dayjs());
       mt: 2,
       mb: 3,
       borderRadius: 2,
-      backgroundColor: "#f9f9f9",
+     backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#ffffff",
+border: "1px solid #e0e0e0",
+
     }}
   >
     <Grid container spacing={2}>
@@ -247,11 +271,12 @@ const [toDate, setToDate] = useState(dayjs());
             onChange={item.onChange}
             renderInput={(params) => (
               <TextField
-                {...params}
-                fullWidth
-                size="small"
-                sx={{ height: "56px" }} // fix height for uniformity
-              />
+  {...params}
+  fullWidth
+  size="small"
+  sx={{ ...filterInputSx, height: "56px" }}
+/>
+
             )}
           />
         </Grid>
@@ -259,8 +284,13 @@ const [toDate, setToDate] = useState(dayjs());
 
       {/* Market Dropdown */}
       <Grid item xs={12} sm={6} md={3}>
-        <FormControl fullWidth size="small" sx={{ height: "56px" }}>
-          <InputLabel>Market</InputLabel>
+       <FormControl
+  fullWidth
+  size="small"
+  sx={{ ...filterInputSx, height: "56px" }}
+>
+
+          <InputLabel sx={{ color: "#555" }}>Market</InputLabel>
           <Select
             value={selectedMarket}
             label="Market"
@@ -278,7 +308,12 @@ const [toDate, setToDate] = useState(dayjs());
 
       {/* Grade Dropdown */}
       <Grid item xs={12} sm={6} md={3}>
-        <FormControl fullWidth size="small" sx={{ height: "56px" }}>
+       <FormControl
+  fullWidth
+  size="small"
+  sx={{ ...filterInputSx, height: "56px" }}
+>
+
           <InputLabel>Grade</InputLabel>
           <Select
             value={selectedGrade}

@@ -26,6 +26,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import AddChart from "@mui/icons-material/AddChart";
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 const API_BASE = "https://rubber-backend.solidaridadasia.com/api";
 
@@ -33,6 +36,8 @@ const Farmer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDark = theme.palette.mode === "dark";
+const navigate = useNavigate();
+const location = useLocation();
 
   // State
   const [farmers, setFarmers] = useState([]);
@@ -277,7 +282,9 @@ setValue("rubber_area_immature", selectedFarmer.rubber_area_immature || "");
                   "Immature Area",
                   "Trees",
                   "Trade",
+                   "images",
                   "Action",
+                 
                 ].map((h) => (
                   <th
                     key={h}
@@ -315,15 +322,33 @@ setValue("rubber_area_immature", selectedFarmer.rubber_area_immature || "");
                     {farmer.gender}
                   </td>
                  <td style={{ padding: "10px 12px" }}>{farmer.total_agri_area}</td>
+                 
+
 <td style={{ padding: "10px 12px" }}>{farmer.rubber_area_mature}</td>
 <td style={{ padding: "10px 12px" }}>{farmer.rubber_area_immature}</td>
                   <td style={{ padding: "10px 12px" }}>{farmer.harvesting_tree}</td>
                   <td style={{ padding: "10px 12px" }}>{farmer.harvesting_trade} kg</td>
+                  <td style={{ padding: "10px 12px", display: "flex", gap: 8 }}>
+  {/* 👁 View */}
+  <IconButton
+  color="primary"
+  onClick={() =>
+    navigate(`/farmer-quality/${farmer.id}`, {
+      state: { farmers }
+    })
+  }
+>
+  <AddChart />
+</IconButton>
+
+
+</td>
                   <td style={{ padding: "10px 12px" }}>
                     <IconButton onClick={(e) => handleMenuOpen(e, farmer)}>
                       <MoreVertIcon />
                     </IconButton>
                   </td>
+                  
                 </tr>
               ))}
             </tbody>
@@ -435,3 +460,4 @@ setValue("rubber_area_immature", selectedFarmer.rubber_area_immature || "");
 };
 
 export default Farmer;
+

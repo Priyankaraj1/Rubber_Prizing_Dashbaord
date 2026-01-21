@@ -7,6 +7,7 @@ import AuthPage from "./pages/AuthPage";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import FarmersTable from "./pages/FarmersTable";
+import FarmerQuality from "./pages/FarmerQuality";
 import Advisory from "./pages/Advisory";
 import Officer from "./pages/Officer";
 import Enquiry from "./pages/Enquiry";
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/Advisory" element={<Advisory />} />
           <Route path="/Officers" element={<Officer />} />
           <Route path="/Enquiries" element={<Enquiry />} />
+          <Route path="/farmer-quality/:farmerId" element={<FarmerQuality />} />
           <Route path="/AdvisoryType" element={<AdvisoryType />} />
           <Route path="/add-advisory" element={<AddAdvisory />} />
         </Route>
