@@ -47,8 +47,7 @@ const Advisory = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-const navigate = useNavigate();
-  // State
+  const navigate = useNavigate();
   const [advisories, setAdvisories] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +61,7 @@ const navigate = useNavigate();
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [showFiles, setShowFiles] = useState({});
-const [editingAdvisory, setEditingAdvisory] = useState(null);
+  const [editingAdvisory, setEditingAdvisory] = useState(null);
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
   const pdfRef = useRef();

@@ -62,11 +62,10 @@ const tableBorder = theme.palette.divider;
   reset,
   formState: { errors },
 } = useForm({
-  shouldUnregister: false, // IMPORTANT for dialogs
+  shouldUnregister: false, 
 });
 
 
-    // Fetch Farmers
     useEffect(() => {
       const fetchFarmers = async () => {
         try {
