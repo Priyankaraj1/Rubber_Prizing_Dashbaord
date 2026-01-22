@@ -133,3 +133,18 @@
   }
 }
 
+@media (max-width: 600px) {
+  .graph-card {
+    padding: 16px 12px;           /* less internal padding on mobile */
+  }
+  
+  .graph-title {
+    font-size: 1.15rem;
+    margin-bottom: 16px;
+  }
+  
+  /* prevent extreme overlapping if many dates */
+  .recharts-xAxis .recharts-cartesian-axis-tick text {
+    white-space: nowrap;
+  }
+}

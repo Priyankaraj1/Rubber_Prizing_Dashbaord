@@ -62,7 +62,7 @@ const navigate = useNavigate();
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [showFiles, setShowFiles] = useState({});
-
+const [editingAdvisory, setEditingAdvisory] = useState(null);
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
   const pdfRef = useRef();
@@ -143,46 +143,61 @@ const navigate = useNavigate();
   };
 
   // Edit
-  const handleEdit = () => {
-    setValue("advisory_type", selected.advisory_type);
-    setValue("title", selected.title);
-    setValue("description", selected.description);
-    setOpenEdit(true);
-    handleMenuClose();
-  };
+ const handleEdit = () => {
+  setEditingAdvisory(selected); // ✅ persist data safely
 
-  const onEditSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("id", selected.id);
-    formData.append("advisory_type", data.advisory_type);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    if (pdfRef.current.files[0]) formData.append("pdf_file", pdfRef.current.files[0]);
-    if (imgRef.current.files[0]) formData.append("image_file", imgRef.current.files[0]);
-    if (videoRef.current.files[0]) formData.append("video_file", videoRef.current.files[0]);
-    if (audioRef.current.files[0]) formData.append("audio_file", audioRef.current.files[0]);
+  setValue("advisory_type", Number(selected.advisory_type));
+  setValue("title", selected.title);
+  setValue("description", selected.description);
 
-    try {
-      await axios.post(`${API_BASE}/updateAdvisory`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setAdvisories((prev) =>
-        prev.map((a) =>
-          a.id === selected.id
-            ? {
-                ...a,
-                advisory_type: data.advisory_type,
-                title: data.title,
-                description: data.description,
-              }
-            : a
-        )
-      );
-      setOpenEdit(false);
-    } catch (err) {
-      alert("Update failed.");
-    }
-  };
+  setOpenEdit(true);
+  handleMenuClose(); // safe now
+};
+const onEditSubmit = async (data) => {
+  if (!editingAdvisory) return;
+
+  const formData = new FormData();
+  formData.append("id", editingAdvisory.id);
+  formData.append("advisory_type", data.advisory_type);
+  formData.append("title", data.title);
+  formData.append("description", data.description);
+
+  if (pdfRef.current.files[0]) formData.append("pdf_file", pdfRef.current.files[0]);
+  if (imgRef.current.files[0]) formData.append("image_file", imgRef.current.files[0]);
+  if (videoRef.current.files[0]) formData.append("video_file", videoRef.current.files[0]);
+  if (audioRef.current.files[0]) formData.append("audio_file", audioRef.current.files[0]);
+
+  try {
+    await axios.post(`${API_BASE}/updateAdvisory`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    setAdvisories((prev) =>
+      prev.map((a) =>
+        a.id === editingAdvisory.id
+          ? {
+              ...a,
+              advisory_type: data.advisory_type,
+              title: data.title,
+              description: data.description,
+            }
+          : a
+      )
+    );
+
+    setOpenEdit(false);
+    setEditingAdvisory(null);
+  } catch (err) {
+    alert("Update failed.");
+  }
+};
+const closeDialog = () => {
+  setOpenAdd(false);
+  setOpenEdit(false);
+  setEditingAdvisory(null);
+  reset();
+};
+
 
   // Delete
   const handleDelete = () => {
@@ -292,8 +307,9 @@ onClick={() => navigate("/add-advisory")}
             <thead>
               <tr
                 style={{
-                  backgroundColor: isDark ? "#1f1f1f" : "#37474f",
-                  color: isDark ? "#fff" : "#fff",
+                  backgroundColor: "#37474f",
+                  
+                  color: "white",
                   textAlign: "left",
                 }}
               >
@@ -419,7 +435,7 @@ onClick={() => navigate("/add-advisory")}
       </Menu>
 
       {/* Add / Edit Dialog */}
-      <Dialog open={openAdd || openEdit} onClose={() => { setOpenAdd(false); setOpenEdit(false); }} maxWidth="sm" fullWidth>
+     <Dialog open={openAdd || openEdit} onClose={closeDialog} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold" }}>
           {openAdd ? "Add Advisory" : "Edit Advisory"}
           <IconButton onClick={() => { setOpenAdd(false); setOpenEdit(false); }} sx={{ position: "absolute", right: 8, top: 8 }}>

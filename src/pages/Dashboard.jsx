@@ -172,7 +172,7 @@ const [toDate, setToDate] = useState(dayjs());
     }
   };
 const filterInputSx = {
-  bgcolor: "#fff",
+  // bgcolor: "#fff",
   borderRadius: 1,
   "& .MuiInputBase-input": {
     color: "#000", // text color

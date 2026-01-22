@@ -216,7 +216,6 @@ const AdvisoryType = () => {
                     style={{
                       padding: "10px 12px",
                       fontWeight: 500,
-                      fontSize: "0.9rem",
                       whiteSpace: "nowrap",
                     }}
                   >
@@ -248,19 +247,22 @@ const AdvisoryType = () => {
                   >
                     {type.name}
                   </td>
-                  <td style={{ padding: "10px 12px", textAlign: "center" }}>
-                    <IconButton
-                      onClick={() => handleDelete(type.id)}
-                      disabled={deletingId === type.id}
-                      color="error"
-                    >
-                      {deletingId === type.id ? (
-                        <CircularProgress size={20} />
-                      ) : (
-                        <DeleteIcon />
-                      )}
-                    </IconButton>
-                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+  <div style={{ display: "flex", justifyContent: "left" }}>
+    <IconButton
+      onClick={() => handleDelete(type.id)}
+      disabled={deletingId === type.id}
+      color="error"
+    >
+      {deletingId === type.id ? (
+        <CircularProgress size={20} />
+      ) : (
+        <DeleteIcon />
+      )}
+    </IconButton>
+  </div>
+</td>
+
                 </tr>
               ))}
             </tbody>

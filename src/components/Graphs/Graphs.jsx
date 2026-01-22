@@ -96,31 +96,26 @@ if (selectedMarket !== "all") {
   }
   
 function fillMissingPrices(data, markets) {
- 
-priceData.forEach((marketItem) => {
-  const marketName = MARKET_API_MAP[marketItem.market.toLowerCase()] || marketItem.market;
-
-  marketItem.prices.forEach((price) => {
-    const date = price.arrival_date;
-    if (!marketData[date]) marketData[date] = { date };
-    marketData[date][`${marketName}_INR`] = parseFloat(price.INR);
-  });
-});
-
   markets.forEach((market) => {
     let nextValue = null;
+    const key = `${market}_INR`;
+
     for (let i = data.length - 1; i >= 0; i--) {
-      const key = `${market}_INR`;
-      if (data[i][key] != null) {
-        nextValue = data[i][key];
-      } else if (nextValue != null) {
+      const current = data[i][key];
+
+      if (typeof current === "number" && !isNaN(current)) {
+        nextValue = current;
+      } else if (nextValue !== null) {
         data[i][key] = nextValue;
+      } else {
+        delete data[i][key]; // 👈 remove invalid values
       }
     }
   });
 
   return data;
 }
+
   const genderData = [
     { name: "Male", value: breadcrumbData.total_male_workers },
     { name: "Female", value: breadcrumbData.total_female_workers },
@@ -201,7 +196,17 @@ priceData
 );
 const visibleMarkets =
   selectedMarket === "all"
-    ? Array.from(new Set(priceData.map((m) => m.market)))
+    ? Array.from(
+        new Set(
+          priceData
+            .filter((m) =>
+              m.prices.some(
+                (p) => !isNaN(parseFloat(p.INR))
+              )
+            )
+            .map((m) => m.market)
+        )
+      )
     : [MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket];
 
 priceChartData = fillMissingPrices(priceChartData, visibleMarkets);
@@ -210,27 +215,40 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   return (
     <div style={{ padding: "0 40px", color: textColor }}>
 <div className="graph-card">
-  <h3 className="graph-title ">Rubber Pricing</h3>
-  <div
-  style={{
-    background: "rgba(0,0,0,0.02)",
-    borderRadius: "14px",
-    padding: "12px",
-    border: "1px solid rgba(0,0,0,0.06)",
-  }}
->
-  <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
-
+ <h3 className="graph-title">
+          Rubber Pricing  for Grade  {selectedGrade || "All Grades"}
+          {selectedMarket !== "all" && ` (${MARKET_API_MAP[selectedMarket.toLowerCase()] || selectedMarket})`}
+        </h3>
+        <Typography
+    variant="caption"
+    color="text.secondary"
+    sx={{
+      display: "block",
+      mt: 0.5,
+      mb: 2,
+      fontSize: { xs: "0.78rem", sm: "0.85rem" },
+      fontStyle: "italic",
+      opacity: 0.8,
+    }}
+  >
+    Apply filters above to change grade or market
+  </Typography>
   
+  <ResponsiveContainer width="100%" height={isMobile ? 380 : 500}>
     <LineChart
       data={priceChartData}
-      margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+      margin={{ 
+        top: 20, 
+        right: 30, 
+        left: isMobile ? -5 : 0, 
+        bottom: isMobile ? 50 : 5 
+      }}
     >
       <CartesianGrid stroke={gridColor} strokeDasharray="2 2" />
 
       <XAxis
         dataKey="date"
-        tick={{ fontSize: 12, fill: axisColor }}
+        tick={{ fontSize: isMobile ? 10 : 12, fill: axisColor }}
         tickFormatter={(v) =>
           new Date(v).toLocaleDateString("en-IN", {
             day: "2-digit",
@@ -240,56 +258,48 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
       />
 
       <YAxis
-  tick={{ fontSize: 12, fill: axisColor }}
-  tickFormatter={(v) => `₹${v}`}
-  domain={[16000, 'dataMax + 1000']}   
-/>
-      {/* <Tooltip
-        formatter={(value, name) => [`₹${value}`, name]}
-        contentStyle={{
-          background: cardBg,
-          borderRadius: 6,
-          border: `1px solid ${isDark ? "#333" : "#ccc"}`,
-          color: textColor,
-        }}
-        labelStyle={{ fontWeight: "bold" }}
-      /> */}
-    <Tooltip
+        tick={{ fontSize: isMobile ? 10 : 12, fill: axisColor }}
+        tickFormatter={(v) => `₹${v}`}
+        width={isMobile ? 40 : 60}
+        domain={[16000, 'dataMax + 1000']}   
+      />
+
+      <Tooltip
   formatter={(v, name) => {
-    if (name.toLowerCase().includes("kuttoor")) return []; // ❗ hide kuttoor tooltip
+    if (v == null || isNaN(v)) return null;
     return [`₹${v}`, name];
   }}
 />
 
+
       <Legend wrapperStyle={{ color: textColor }} />
-    {visibleMarkets.map((market, idx) => {
-  const normalized = market.toLowerCase();
 
-  const isKuttoor =
-    normalized.includes("kuttoor") ||
-    normalized.includes("khootor") ||
-    normalized.includes("khuttoor");
+      {visibleMarkets.map((market, idx) => {
+        const normalized = market.toLowerCase();
 
-  const labelName = MARKET_API_MAP[normalized] || market;
+        const isKuttoor =
+          normalized.includes("kuttoor") ||
+          normalized.includes("khootor") ||
+          normalized.includes("khuttoor");
 
-  return (
-    <Line
-      key={`${market}_line`}
-      type="monotone"
-      dataKey={`${market}_INR`}
-      name={isKuttoor ? "" : labelName}    // hide label
-      legendType={isKuttoor ? "none" : "line"}  // 🔥 hide from legend completely
-      stroke={marketColors[idx % marketColors.length]}
-      strokeWidth={3}
-      dot={{ r: 4 }}
-      activeDot={{ r: 6 }}
-    />
-  );
-})}
+        const labelName = MARKET_API_MAP[normalized] || market;
 
+        return (
+          <Line
+            key={`${market}_line`}
+            type="monotone"
+            dataKey={`${market}_INR`}
+            name={isKuttoor ? "" : labelName}
+            legendType={isKuttoor ? "none" : "line"}
+            stroke={marketColors[idx % marketColors.length]}
+            strokeWidth={isMobile ? 2.5 : 3}
+            dot={{ r: isMobile ? 3 : 4 }}
+            activeDot={{ r: isMobile ? 5 : 6 }}
+          />
+        );
+      })}
     </LineChart>
   </ResponsiveContainer>
-  </div>
 </div>
 
       {/* 🟦 Intercrops + Gender */}
@@ -307,14 +317,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
           <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px",  marginBottom: "20px", }}>
             Intercrops Distribution
           </h3>
-          <div
-  style={{
-    background: "rgba(0,0,0,0.02)",
-    borderRadius: "14px",
-    padding: "12px",
-    border: "1px solid rgba(0,0,0,0.06)",
-  }}
->
     <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -375,7 +377,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
             </BarChart>
           </ResponsiveContainer>
         </div>
-        </div>
           <div
   style={{
     display: "grid",
@@ -385,14 +386,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   }}
 >
           <h3 style={{ color: textColor, fontSize: "20px" ,  marginTop: "20px",}}>Gender Distribution</h3>
-          <div
-  style={{
-    background: "rgba(0,0,0,0.02)",
-    borderRadius: "14px",
-    padding: "12px",
-    border: "1px solid rgba(0,0,0,0.06)",
-  }}
->
     <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -421,7 +414,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
               <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: textColor }} />
             </PieChart>
           </ResponsiveContainer>
-        </div>
         </div>
         
 
@@ -455,14 +447,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
       Agricultural Area Distribution
     </h3>
-    <div
-  style={{
-    background: "rgba(0,0,0,0.02)",
-    borderRadius: "14px",
-    padding: "12px",
-    border: "1px solid rgba(0,0,0,0.06)",
-  }}
->
   <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
 
@@ -499,7 +483,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
         />
       </PieChart>
     </ResponsiveContainer>
-  </div></div>
+  </div>
 
  <div
   style={{
@@ -512,14 +496,7 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
   <h3 style={{ color: textColor, fontSize: "20px", marginBottom: "10px" }}>
     Mature vs Immature Trees
   </h3>
- <div
-  style={{
-    background: "rgba(0,0,0,0.02)",
-    borderRadius: "14px",
-    padding: "12px",
-    border: "1px solid rgba(0,0,0,0.06)",
-  }}
->
+
   <ResponsiveContainer width="100%" height={isMobile ? 250 : 380}>
 
     <BarChart
@@ -571,7 +548,6 @@ const marketColors = ["#2e8b57", "#cddc39", "#26a69a", "#2b8a66", "#cddc39", "#2
     <Bar dataKey="Mature" fill="#26a69a" barSize={25} />
     </BarChart>
   </ResponsiveContainer>
-  </div>
 </div>
 </div>   
     </div>

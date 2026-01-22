@@ -159,7 +159,7 @@ export default function AuthPage({ onLogin }) {
               color: "black",
             }}
           >
-            Forgot password?
+            
           </Typography>
 
           <Button

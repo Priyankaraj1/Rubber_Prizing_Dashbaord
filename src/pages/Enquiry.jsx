@@ -218,11 +218,13 @@ const handleReply = (enquiry) => {
             <thead>
               <tr
                 style={{
-          backgroundColor: "#37474f",
-          color: "white",
-          textAlign: "left",
-        }}
+                  backgroundColor: "#37474f",
+                  
+                  color: "white",
+                  textAlign: "left",
+                }}
               >
+              
                 {["Id", "Name", "Phone", "Query", "Image", "Video", "Audio", "Action"].map((h) => (
                   <th
                     key={h}
